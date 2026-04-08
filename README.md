@@ -34,6 +34,8 @@ dependencies:
 
 Flutter's federated plugin resolution picks this over the default `flutter_image_compress_common` for Android and iOS. The Dart API stays unchanged.
 
+**Note:** This package is SPM-only (no podspec). It requires a fully SPM-based iOS project — if your project still uses CocoaPods for other plugins (mixed mode), `pod install` will fail looking for a podspec. Remove all CocoaPods dependencies first, then `pod deintegrate`.
+
 ## License
 
 Same as upstream: MIT
