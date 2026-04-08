@@ -14,7 +14,7 @@ let package = Package(
         .target(
             name: "flutter_image_compress_lite",
             dependencies: [],
-            publicHeadersPath: "."
+            publicHeadersPath: "include"
         )
     ]
 )
