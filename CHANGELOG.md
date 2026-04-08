@@ -10,6 +10,3 @@ No federated plugin architecture, no transitive dependencies with podspecs, no C
 - **iOS**: keepExif via native ImageIO (no Mantle)
 - **Android**: Kotlin DSL, removed commons-io, bumped exifinterface 1.4.2, heifwriter 1.1.0
 
-## 1.0.7
-
-Federated fork of flutter_image_compress_common (deprecated, use 2.0.0).
