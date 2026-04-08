@@ -1,4 +1,4 @@
-## 2.0.1
+## 2.0.2
 
 Merged `flutter_image_compress` + `flutter_image_compress_common` into a single standalone package.
 No federated plugin architecture, no transitive dependencies with podspecs, no CocoaPods required.
