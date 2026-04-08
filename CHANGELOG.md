@@ -1,10 +1,20 @@
+## 1.0.7 (lite fork)
+
+- **BREAKING**: Remove WebP encoding support on iOS (decoding works natively on iOS 14+)
+- **iOS**: Remove SDWebImage, SDWebImageWebPCoder, Mantle dependencies
+- **iOS**: Remove SYPictureMetadata — keepExif reimplemented with native ImageIO
+- **iOS**: Add Swift Package Manager support (Package.swift)
+- **iOS**: Bump deployment target to 14.0
+- **Android**: Remove unused commons-io dependency
+- **Android**: Migrate build.gradle to Kotlin DSL with AGP 8+9 compat
+
 ## 1.0.6
 
 - **DEPS**: Bump `compileSdk` to `34`.
 
 ## 1.0.5
 
- - **DOCS**: The first version for OpenHarmony. ([5fcab8da](https://github.com/fluttercandies/flutter_image_compress/commit/5fcab8dac6277b36b7169962474e5af3cf88724b))
+ - **DOCS**: The first version for OpenHarmony.
 
 ## 1.0.4
 
@@ -13,12 +23,11 @@
 
 ## 1.0.3
 
- - **DOCS**: Update README ([#266](https://github.com/fluttercandies/flutter_image_compress/issues/266)). ([235643ab](https://github.com/fluttercandies/flutter_image_compress/commit/235643ab0be9c9a39083031d9ab9de06a74241f3))
- - **DOCS**: Update changelog. ([c847f5d5](https://github.com/fluttercandies/flutter_image_compress/commit/c847f5d5d03d4e727b1a83dd33e54d8d93787749))
+ - **DOCS**: Update README.
 
 ## 1.0.2
 
- - **DOCS**: Update changelog. ([c847f5d5](https://github.com/fluttercandies/flutter_image_compress/commit/c847f5d5d03d4e727b1a83dd33e54d8d93787749))
+ - **DOCS**: Update changelog.
 
 ## 1.0.1
 
