@@ -71,7 +71,7 @@
       "name": "flutter_image_compress_common_lite",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.11"
     }
   ],
   "generator": "pub",
