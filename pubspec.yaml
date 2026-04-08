@@ -1,7 +1,7 @@
 name: flutter_image_compress_common_lite
 description: Lite fork of flutter_image_compress_common — no WebP/SDWebImage/Mantle deps, SPM support, AGP 9 compat.
 repository: https://github.com/qeepcologne/flutter_image_compress_lite
-version: 1.0.7
+version: 1.0.7+1
 
 environment:
   sdk: ^3.11.0
