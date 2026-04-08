@@ -9,4 +9,5 @@ Forked from [flutter_image_compress_common 1.0.6](https://pub.dev/packages/flutt
 - **iOS**: Add Swift Package Manager support (Package.swift)
 - **iOS**: Bump deployment target to 14.0
 - **Android**: Remove unused commons-io dependency
-- **Android**: Migrate build.gradle to Kotlin DSL with AGP 8+9 compat
+- **Android**: Migrate build.gradle to Kotlin DSL, require AGP 9+
+- **Android**: Bump exifinterface 1.3.3 → 1.4.2, heifwriter 1.0.0 → 1.1.0
