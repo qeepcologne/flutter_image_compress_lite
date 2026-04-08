@@ -1,10 +1,10 @@
 ## 1.0.7+4
 
 Forked from [flutter_image_compress_common 1.0.6](https://pub.dev/packages/flutter_image_compress_common).
-Legacy-free: no Groovy, no AGP <9, no third-party iOS deps. SPM for iOS build, stub podspec for CocoaPods compat.
+Legacy-free: no Groovy, no AGP <9, no third-party iOS deps.
 
 - **BREAKING**: Remove WebP encoding support on iOS (decoding works natively on iOS 14+)
-- **iOS**: SPM for actual build, stub podspec for Flutter's CocoaPods pipeline
+- **iOS**: SPM for build, stub podspec included for mixed CocoaPods/SPM projects
 - **iOS**: Remove SDWebImage, SDWebImageWebPCoder, Mantle dependencies
 - **iOS**: Remove SYPictureMetadata — keepExif reimplemented with native ImageIO
 - **iOS**: Add Swift Package Manager support (Package.swift)
@@ -13,3 +13,17 @@ Legacy-free: no Groovy, no AGP <9, no third-party iOS deps. SPM for iOS build, s
 - **Android**: Migrate build.gradle to Kotlin DSL, require AGP 9+
 - **Android**: Bump minSdk to 24, exifinterface 1.3.3 → 1.4.2, heifwriter 1.0.0 → 1.1.0
 - **Dart/Flutter**: Require Dart ^3.11.0, Flutter >=3.41.0
+
+### Fully removing CocoaPods
+
+The upstream `flutter_image_compress_common` has a podspec which forces Flutter to run
+`pod install`. To eliminate CocoaPods entirely, also override the upstream with the
+`override` branch (no podspec, no plugin registration):
+
+```yaml
+dependency_overrides:
+  flutter_image_compress_common:
+    git:
+      url: https://github.com/qeepcologne/flutter_image_compress_lite.git
+      ref: override
+```

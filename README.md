@@ -34,7 +34,17 @@ dependencies:
 
 Flutter's federated plugin resolution picks this over the default `flutter_image_compress_common` for Android and iOS. The Dart API stays unchanged.
 
-**Note:** SPM is used for the actual iOS build. A stub podspec is included for compatibility with Flutter's CocoaPods-based build pipeline.
+### Fully removing CocoaPods
+
+The upstream `flutter_image_compress_common` has a podspec which forces Flutter to run `pod install`. To eliminate CocoaPods entirely, also override the upstream with the `override` branch (no podspec, no plugin registration):
+
+```yaml
+dependency_overrides:
+  flutter_image_compress_common:
+    git:
+      url: https://github.com/qeepcologne/flutter_image_compress_lite.git
+      ref: override
+```
 
 ## License
 
