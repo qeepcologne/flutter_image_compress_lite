@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.fluttercandies.flutter_image_compress.core.CompressFileHandler
 import com.fluttercandies.flutter_image_compress.core.CompressListHandler
+import com.fluttercandies.flutter_image_compress.format.CompressFormat
 import com.fluttercandies.flutter_image_compress.format.FormatRegister
 import com.fluttercandies.flutter_image_compress.handle.common.CommonHandler
 import com.fluttercandies.flutter_image_compress.handle.heif.HeifHandler
@@ -22,10 +23,10 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     init {
-        FormatRegister.registerFormat(CommonHandler(0)) // jpeg
-        FormatRegister.registerFormat(CommonHandler(1)) // png
-        FormatRegister.registerFormat(HeifHandler()) // heic / heif
-        FormatRegister.registerFormat(CommonHandler(3)) // webp
+        FormatRegister.registerFormat(CommonHandler(CompressFormat.JPEG))
+        FormatRegister.registerFormat(CommonHandler(CompressFormat.PNG))
+        FormatRegister.registerFormat(HeifHandler())
+        FormatRegister.registerFormat(CommonHandler(CompressFormat.WEBP))
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {

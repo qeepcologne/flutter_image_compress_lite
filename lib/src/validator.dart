@@ -26,10 +26,16 @@ class FlutterImageCompressValidator {
     }
   }
 
-  /// Plugin only registers on Android+iOS. HEIC and WebP both work on iOS
-  /// (15+) without checks; the only remaining runtime constraint is HEIC
-  /// encoding requires Android API 28+. Throws [UnsupportedError] otherwise.
+  /// Validates the *encoding* target — input formats are auto-detected by
+  /// the native decoder and never need a check. Plugin only registers on
+  /// Android+iOS, so the remaining runtime constraints are:
+  ///   - HEIC encoding requires Android API 28+
+  ///   - WebP encoding is not supported on iOS (decoding works on iOS 14+)
+  /// Throws [UnsupportedError] when the encoding is unsupported.
   Future<void> checkSupportPlatform(CompressFormat format) async {
+    if (format == .webp && Platform.isIOS) {
+      throw UnsupportedError('WebP encoding is not supported on iOS');
+    }
     if (format == .heic && Platform.isAndroid) {
       final int version = await channel.invokeMethod('getSystemVersion');
       if (version < 28) {

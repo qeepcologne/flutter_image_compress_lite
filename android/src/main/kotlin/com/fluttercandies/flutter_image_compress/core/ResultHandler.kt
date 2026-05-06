@@ -28,16 +28,4 @@ abstract class ResultHandler(private var result: MethodChannel.Result?) {
             result?.success(any)
         }
     }
-
-    fun replyError(code: String, message: String? = null, obj: Any? = null) {
-        if (isReply) {
-            return
-        }
-        isReply = true
-        val result = this.result
-        this.result = null
-        handler.post {
-            result?.error(code, message, obj)
-        }
-    }
 }

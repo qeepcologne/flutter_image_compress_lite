@@ -11,19 +11,19 @@
 }
 
 + (NSData *)compressWithData:(NSData *)data minWidth:(int)minWidth minHeight:(int)minHeight quality:(int)quality
-                      rotate:(int)rotate format:(int)format {
+                      rotate:(int)rotate format:(ImageCompressFormat)format {
     UIImage *img = [[UIImage alloc] initWithData:data];
     return [CompressHandler compressWithUIImage:img minWidth:minWidth minHeight:minHeight quality:quality rotate:rotate format:format];
 }
 
 + (NSData *)compressWithUIImage:(UIImage *)image minWidth:(int)minWidth minHeight:(int)minHeight quality:(int)quality
-                         rotate:(int)rotate format:(int)format {
+                         rotate:(int)rotate format:(ImageCompressFormat)format {
     if([ImageCompressPlugin showLog]){
         NSLog(@"width = %.0f",[image size].width);
         NSLog(@"height = %.0f",[image size].height);
         NSLog(@"minWidth = %d",minWidth);
         NSLog(@"minHeight = %d",minHeight);
-        NSLog(@"format = %d", format);
+        NSLog(@"format = %ld", (long)format);
     }
 
     image = [image scaleWithMinWidth:minWidth minHeight:minHeight];
@@ -37,7 +37,7 @@
 
 
 + (NSData *)compressDataWithUIImage:(UIImage *)image minWidth:(int)minWidth minHeight:(int)minHeight
-                            quality:(int)quality rotate:(int)rotate format:(int)format {
+                            quality:(int)quality rotate:(int)rotate format:(ImageCompressFormat)format {
     image = [image scaleWithMinWidth:minWidth minHeight:minHeight];
     if(rotate % 360 != 0){
         image = [image rotate: rotate];
@@ -45,27 +45,24 @@
     return [self compressDataWithImage:image quality:quality format:format];
 }
 
-+ (NSData *)compressDataWithImage:(UIImage *)image quality:(float)quality format:(int)format  {
++ (NSData *)compressDataWithImage:(UIImage *)image quality:(float)quality format:(ImageCompressFormat)format  {
     NSData *data;
-    if (format == 2) { // heic
+    if (format == ImageCompressFormatHEIC) {
         CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
-        CIContext *ciContext = [[CIContext alloc]initWithOptions:nil];
-        NSString *tmpDir = NSTemporaryDirectory();
-        double time = [[NSDate alloc]init].timeIntervalSince1970;
-        NSString *target = [NSString stringWithFormat:@"%@%.0f.heic",tmpDir, time * 1000];
-        NSURL *url = [NSURL fileURLWithPath:target];
-
-        NSMutableDictionary *options = [NSMutableDictionary new];
-        NSString *qualityKey = (__bridge NSString *)kCGImageDestinationLossyCompressionQuality;
-        [options setObject:@(quality / 100) forKey: qualityKey];
-
-        [ciContext writeHEIFRepresentationOfImage:ciImage toURL:url format: kCIFormatARGB8 colorSpace: ciImage.colorSpace options:options error:nil];
-        data = [NSData dataWithContentsOfURL:url];
-    } else if(format == 3){ // webp — encoding not supported, but iOS 14+ decodes WebP input natively via UIImage
+        CIContext *ciContext = [[CIContext alloc] initWithOptions:nil];
+        NSDictionary *options = @{
+            (__bridge NSString *)kCGImageDestinationLossyCompressionQuality: @(quality / 100.0)
+        };
+        data = [ciContext heifRepresentationOfImage:ciImage
+                                              format:kCIFormatARGB8
+                                          colorSpace:ciImage.colorSpace
+                                             options:options];
+    } else if (format == ImageCompressFormatWEBP) {
+        // WebP encoding is not supported on iOS; rejected upfront in the Dart validator.
         data = nil;
-    } else if(format == 1){ // png
+    } else if (format == ImageCompressFormatPNG) {
         data = UIImagePNGRepresentation(image);
-    }else { // 0 or other is jpeg
+    } else { // ImageCompressFormatJPEG
         data = UIImageJPEGRepresentation(image, (CGFloat) quality / 100);
     }
 

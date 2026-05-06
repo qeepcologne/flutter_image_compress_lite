@@ -19,7 +19,7 @@
     int minHeight = [args[2] intValue];
     int quality = [args[3] intValue];
     int rotate = [args[4] intValue];
-    int formatType = [args[6] intValue];
+    ImageCompressFormat formatType = (ImageCompressFormat)[args[6] integerValue];
     BOOL keepExif = [args[7] boolValue];
 
     NSData *data = [list data];

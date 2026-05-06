@@ -1,17 +1,14 @@
 package com.fluttercandies.flutter_image_compress.format
 
-import android.util.SparseArray
 import com.fluttercandies.flutter_image_compress.handle.FormatHandler
+import java.util.EnumMap
 
 object FormatRegister {
-    private val formatMap = SparseArray<FormatHandler>()
+    private val formatMap = EnumMap<CompressFormat, FormatHandler>(CompressFormat::class.java)
 
     fun registerFormat(handler: FormatHandler) {
-        formatMap.append(handler.type, handler)
+        formatMap[handler.type] = handler
     }
 
-    fun findFormat(formatIndex: Int): FormatHandler? {
-        return formatMap.get(formatIndex)
-    }
-
+    fun findFormat(format: CompressFormat): FormatHandler? = formatMap[format]
 }

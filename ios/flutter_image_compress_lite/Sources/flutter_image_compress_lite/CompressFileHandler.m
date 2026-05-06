@@ -18,7 +18,7 @@
     int quality = [args[3] intValue];
     int rotate = [args[4] intValue];
 
-    int formatType = [args[6] intValue];
+    ImageCompressFormat formatType = (ImageCompressFormat)[args[6] integerValue];
     BOOL keepExif = [args[7] boolValue];
 
     NSURL *imageUrl = [NSURL fileURLWithPath:path];
@@ -43,7 +43,7 @@
     NSString *targetPath = args[4];
     int rotate = [args[5] intValue];
 
-    int formatType = [args[7] intValue];
+    ImageCompressFormat formatType = (ImageCompressFormat)[args[7] integerValue];
     BOOL keepExif = [args[8] boolValue];
 
     NSURL *imageUrl = [NSURL fileURLWithPath:path];

@@ -3,6 +3,7 @@ package com.fluttercandies.flutter_image_compress.core
 import android.content.Context
 import com.fluttercandies.flutter_image_compress.ImageCompressPlugin
 import com.fluttercandies.flutter_image_compress.exif.Exif
+import com.fluttercandies.flutter_image_compress.format.CompressFormat
 import com.fluttercandies.flutter_image_compress.format.FormatRegister
 import com.fluttercandies.flutter_image_compress.logger.log
 import io.flutter.plugin.common.MethodCall
@@ -22,10 +23,15 @@ class CompressFileHandler(private val call: MethodCall, result: MethodChannel.Re
             val quality = args[3] as Int
             val rotate = args[4] as Int
             val autoCorrectionAngle = args[5] as Boolean
-            val format = args[6] as Int
+            val format = CompressFormat.fromIndex(args[6] as Int)
             val keepExif = args[7] as Boolean
             val inSampleSize = args[8] as Int
             val numberOfRetries = args[9] as Int
+            if (format == null) {
+                log("No support format.")
+                reply(null)
+                return@execute
+            }
             val formatHandler = FormatRegister.findFormat(format)
             if (formatHandler == null) {
                 log("No support format.")
@@ -79,20 +85,25 @@ class CompressFileHandler(private val call: MethodCall, result: MethodChannel.Re
             val targetPath = args[4] as String
             val rotate = args[5] as Int
             val autoCorrectionAngle = args[6] as Boolean
-            val exifRotate = if (autoCorrectionAngle) {
-                Exif.getRotationDegrees(File(file))
-            } else {
-                0
-            }
-            val format = args[7] as Int
+            val format = CompressFormat.fromIndex(args[7] as Int)
             val keepExif = args[8] as Boolean
             val inSampleSize = args[9] as Int
             val numberOfRetries = args[10] as Int
+            if (format == null) {
+                log("No support format.")
+                reply(null)
+                return@execute
+            }
             val formatHandler = FormatRegister.findFormat(format)
             if (formatHandler == null) {
                 log("No support format.")
                 reply(null)
                 return@execute
+            }
+            val exifRotate = if (autoCorrectionAngle) {
+                Exif.getRotationDegrees(File(file))
+            } else {
+                0
             }
             if (exifRotate == 270 || exifRotate == 90) {
                 val tmp = minWidth

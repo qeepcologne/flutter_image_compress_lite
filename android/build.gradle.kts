@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.fluttercandies.flutter_image_compress"
-    compileSdk = 34
+    compileSdk = 36
 
     sourceSets {
         getByName("main") {
