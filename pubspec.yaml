@@ -1,7 +1,7 @@
 name: flutter_image_compress_lite
 description: Standalone image compression plugin — no WebP deps, SPM support, AGP 9+. Drop-in replacement for flutter_image_compress.
 repository: https://github.com/qeepcologne/flutter_image_compress_lite
-version: 2.0.3
+version: 2.0.4
 
 environment:
   sdk: ^3.11.0
