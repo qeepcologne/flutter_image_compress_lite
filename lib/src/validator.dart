@@ -9,11 +9,7 @@ class FlutterImageCompressValidator {
 
   final MethodChannel channel;
 
-  bool ignoreCheckExtName = false;
-  bool ignoreCheckSupportPlatform = false;
-
   void checkFileNameAndFormat(String name, CompressFormat format) {
-    if (ignoreCheckExtName) return;
     name = name.toLowerCase();
     switch (format) {
       case .jpeg:
@@ -34,7 +30,6 @@ class FlutterImageCompressValidator {
   /// (15+) without checks; the only remaining runtime constraint is HEIC
   /// encoding requires Android API 28+.
   Future<bool> checkSupportPlatform(CompressFormat format) async {
-    if (ignoreCheckSupportPlatform) return true;
     if (format == .heic && Platform.isAndroid) {
       final int version = await channel.invokeMethod('getSystemVersion');
       if (version < 28) {
