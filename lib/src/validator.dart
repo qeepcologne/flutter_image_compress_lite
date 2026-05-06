@@ -12,15 +12,15 @@ class FlutterImageCompressValidator {
     if (ignoreCheckExtName) return;
     name = name.toLowerCase();
     switch (format) {
-      case CompressFormat.jpeg:
+      case .jpeg:
         assert(name.endsWith('.jpg') || name.endsWith('.jpeg'),
             'The jpeg format name must end with jpg or jpeg.');
-      case CompressFormat.png:
+      case .png:
         assert(name.endsWith('.png'), 'The png format name must end with png.');
-      case CompressFormat.heic:
+      case .heic:
         assert(
             name.endsWith('.heic'), 'The heic format name must end with heic.');
-      case CompressFormat.webp:
+      case .webp:
         assert(
             name.endsWith('.webp'), 'The webp format name must end with webp.');
     }
@@ -28,7 +28,7 @@ class FlutterImageCompressValidator {
 
   Future<bool> checkSupportPlatform(CompressFormat format) async {
     if (ignoreCheckSupportPlatform) return true;
-    if (format == CompressFormat.heic) {
+    if (format == .heic) {
       if (Platform.isIOS) {
         final String version =
             await channel.invokeMethod('getSystemVersion');
@@ -44,7 +44,7 @@ class FlutterImageCompressValidator {
       } else {
         throw UnsupportedError('HEIC only supported on Android and iOS.');
       }
-    } else if (format == CompressFormat.webp) {
+    } else if (format == .webp) {
       if (Platform.isAndroid || Platform.isIOS) return true;
       throw UnsupportedError('WebP only supported on Android and iOS.');
     }
