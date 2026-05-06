@@ -8,12 +8,14 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'src/compress_error.dart';
+import 'src/compress_format.dart';
+import 'src/validator.dart';
+
 export 'package:cross_file/cross_file.dart';
 
-part 'src/compress_format.dart';
-part 'src/errors.dart';
-part 'src/implementation.dart';
-part 'src/validator.dart';
+export 'src/compress_error.dart';
+export 'src/compress_format.dart';
 
 /// Image Compress plugin.
 ///
@@ -54,7 +56,7 @@ class FlutterImageCompress {
       quality,
       rotate,
       autoCorrectionAngle,
-      _convertTypeToInt(format),
+      format.nativeValue,
       keepExif,
       inSampleSize,
     ]);
@@ -90,7 +92,7 @@ class FlutterImageCompress {
       quality,
       rotate,
       autoCorrectionAngle,
-      _convertTypeToInt(format),
+      format.nativeValue,
       keepExif,
       inSampleSize,
       numberOfRetries
@@ -135,7 +137,7 @@ class FlutterImageCompress {
         targetPath,
         rotate,
         autoCorrectionAngle,
-        _convertTypeToInt(format),
+        format.nativeValue,
         keepExif,
         inSampleSize,
         numberOfRetries,
@@ -181,5 +183,3 @@ class FlutterImageCompress {
     );
   }
 }
-
-int _convertTypeToInt(CompressFormat format) => format.index;

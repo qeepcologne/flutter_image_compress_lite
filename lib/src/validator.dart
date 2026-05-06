@@ -1,4 +1,8 @@
-part of '../flutter_image_compress_lite.dart';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+
+import 'compress_format.dart';
 
 class FlutterImageCompressValidator {
   FlutterImageCompressValidator(this.channel);
@@ -26,27 +30,16 @@ class FlutterImageCompressValidator {
     }
   }
 
+  /// Plugin only registers on Android+iOS. HEIC and WebP both work on iOS
+  /// (15+) without checks; the only remaining runtime constraint is HEIC
+  /// encoding requires Android API 28+.
   Future<bool> checkSupportPlatform(CompressFormat format) async {
     if (ignoreCheckSupportPlatform) return true;
-    if (format == .heic) {
-      if (Platform.isIOS) {
-        final String version =
-            await channel.invokeMethod('getSystemVersion');
-        final result = int.parse(version.split('.')[0]) >= 11;
-        if (!result) throw UnsupportedError('HEIC requires iOS 11.0+');
-        return result;
-      } else if (Platform.isAndroid) {
-        final int version = await channel.invokeMethod('getSystemVersion');
-        if (version < 28) {
-          throw UnsupportedError('HEIC requires Android API 28+');
-        }
-        return true;
-      } else {
-        throw UnsupportedError('HEIC only supported on Android and iOS.');
+    if (format == .heic && Platform.isAndroid) {
+      final int version = await channel.invokeMethod('getSystemVersion');
+      if (version < 28) {
+        throw UnsupportedError('HEIC requires Android API 28+');
       }
-    } else if (format == .webp) {
-      if (Platform.isAndroid || Platform.isIOS) return true;
-      throw UnsupportedError('WebP only supported on Android and iOS.');
     }
     return true;
   }
