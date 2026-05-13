@@ -7,7 +7,6 @@ import com.fluttercandies.flutter_image_compress.core.CompressListHandler
 import com.fluttercandies.flutter_image_compress.format.CompressFormat
 import com.fluttercandies.flutter_image_compress.format.FormatRegister
 import com.fluttercandies.flutter_image_compress.handle.common.CommonHandler
-import com.fluttercandies.flutter_image_compress.handle.heif.HeifHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -25,7 +24,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     init {
         FormatRegister.registerFormat(CommonHandler(CompressFormat.JPEG))
         FormatRegister.registerFormat(CommonHandler(CompressFormat.PNG))
-        FormatRegister.registerFormat(HeifHandler())
+        FormatRegister.registerFormat(CommonHandler(CompressFormat.HEIC))
         FormatRegister.registerFormat(CommonHandler(CompressFormat.WEBP))
     }
 

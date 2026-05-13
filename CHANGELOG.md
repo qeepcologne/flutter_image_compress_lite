@@ -1,3 +1,10 @@
+## 2.2.0
+
+- **BREAKING (Android)**: HEIC encoding now requires API 30+ (Android 11), up from API 28. Calls on API 28/29 now throw `UnsupportedError` instead of attempting to encode.
+- **Android**: dropped the `androidx.heifwriter:heifwriter:1.1.0` dependency. HEIC encoding now uses the platform-native `Bitmap.CompressFormat.HEIC` (available since API 30), going through the same path as JPEG/PNG/WebP. Removes a per-call temp file under `cacheDir`, the dedicated `HeifHandler`, and the `TmpFileUtil` helper.
+
+Why: `androidx.heifwriter` is in maintenance, hasn't moved past 1.1.0 (March 2021), uses `MediaCodec` under the hood, and required a temp file on disk. The platform encoder is direct-to-`OutputStream`, ships with the OS, and has no transitive cost. API 28/29 (Android 9 / 10) is now ~5+ years old; raising the floor by two API levels is cheaper than carrying the legacy library.
+
 ## 2.1.1
 
 - **iOS**: fix iOS build failure introduced in 2.1.0 — corrected selector capitalization to `HEIFRepresentationOfImage:format:colorSpace:options:` (was `heifRepresentationOfImage:`, which doesn't exist on `CIContext`).

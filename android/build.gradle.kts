@@ -24,5 +24,4 @@ android {
 
 dependencies {
     implementation("androidx.exifinterface:exifinterface:1.4.2")
-    implementation("androidx.heifwriter:heifwriter:1.1.0")
 }

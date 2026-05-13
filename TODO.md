@@ -15,7 +15,6 @@ Findings from cleanup audit (2026-05-06) — items deferred for later.
 
 ### Modernization
 - **Replace thread pool with coroutines** — `ResultHandler` uses a singleton `Executors.newFixedThreadPool(8)` that's never shut down on `onDetachedFromEngine` (leak). Migrate to a `CoroutineScope` cancelled in `onDetached`. Removes the static `Handler(Looper.getMainLooper())` (use `Dispatchers.Main`).
-- **Drop `androidx.heifwriter`** — `1.1.0` is in maintenance mode and forces the `tools:overrideLibrary` workaround in `AndroidManifest.xml`. Forward path: `MediaMuxer` + `MediaCodec` HEIC encoder (API 28+, already the gate). Larger lift.
 
 ## iOS
 

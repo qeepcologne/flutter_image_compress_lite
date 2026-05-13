@@ -11,10 +11,10 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 | | flutter_image_compress | flutter_image_compress_lite |
 |---|---|---|
 | iOS deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
-| Android deps | exifinterface, heifwriter, commons-io | exifinterface, heifwriter |
+| Android deps | exifinterface, heifwriter, commons-io | exifinterface |
 | iOS WebP decoding | via SDWebImage | native (iOS 14+) |
 | iOS WebP encoding | via SDWebImage | not supported |
-| HEIC/HEIF | yes | yes |
+| HEIC/HEIF | yes (heifwriter, API 28+) | yes (native, API 30+) |
 | JPEG/PNG | yes | yes |
 | keepExif (iOS) | via Mantle/SYMetadata | native ImageIO |
 | keepExif (Android) | via ExifInterface | via ExifInterface |
@@ -31,7 +31,7 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.1.1
+  flutter_image_compress_lite: ^2.2.0
 ```
 
 ```dart
@@ -49,7 +49,7 @@ Same `FlutterImageCompress` API as the upstream — just change the import.
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
 - WebP encoding on iOS (decoding works on iOS 14+)
-- HEIC encoding on Android < API 28
+- HEIC encoding on Android < API 30 (Android 11)
 
 `CompressError` is thrown for invalid input (empty image, missing file, `androidOomRetries <= 0`).
 

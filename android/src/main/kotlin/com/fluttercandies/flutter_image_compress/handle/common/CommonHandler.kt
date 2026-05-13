@@ -14,10 +14,6 @@ import java.io.OutputStream
 
 class CommonHandler(override val type: CompressFormat) : FormatHandler {
 
-    private val bitmapFormat: Bitmap.CompressFormat = requireNotNull(type.bitmapFormat) {
-        "CommonHandler does not support ${type.typeName}"
-    }
-
     override fun handleByteArray(
         context: Context,
         byteArray: ByteArray,
@@ -88,6 +84,9 @@ class CommonHandler(override val type: CompressFormat) : FormatHandler {
         quality: Int,
         rotate: Int,
     ): ByteArray {
+        val bitmapFormat = requireNotNull(type.bitmapFormat) {
+            "${type.typeName} encoding is not available on this OS version"
+        }
         val w = bitmap.width.toFloat()
         val h = bitmap.height.toFloat()
         log("src width = $w")
