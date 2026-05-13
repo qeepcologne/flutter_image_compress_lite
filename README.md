@@ -12,21 +12,21 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 |---|---|---|
 | iOS deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
 | Android deps | exifinterface, heifwriter, commons-io | **none** |
+| CocoaPods required | yes (transitive) | **no** |
+| JPEG/PNG | yes | yes |
+| HEIC/HEIF | yes (heifwriter, API 28+) | yes (native, API 30+) |
 | iOS WebP decoding | via SDWebImage | native (iOS 14+) |
 | iOS WebP encoding | via SDWebImage | not supported |
-| HEIC/HEIF | yes (heifwriter, API 28+) | yes (native, API 30+) |
-| JPEG/PNG | yes | yes |
 | keepExif (iOS) | via Mantle/SYMetadata | native ImageIO |
 | keepExif (Android) | via androidx.exifinterface | native android.media.ExifInterface |
 | iOS language | Objective-C | Swift |
 | Android language | Java + Kotlin | Kotlin |
 | iOS packaging | CocoaPods | SPM only |
-| AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
 | iOS deployment target | 9.0 | 15.0 |
 | Android minSdk | 21 | 24 |
+| AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
 | Dart/Flutter | >=2.12/>=2.0 | ^3.11/>=3.41 |
 | Architecture | federated (3 packages) | standalone (1 package) |
-| CocoaPods required | yes (transitive) | **no** |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
 
 ## Usage
