@@ -1,6 +1,6 @@
 # flutter_image_compress_lite
 
-Standalone image compression plugin for Flutter (Android + iOS only) — set up as legacy free drop-in replacement for `flutter_image_compress` with no third-party iOS dependencies and no CocoaPods requirement and support.
+Standalone image compression plugin for Flutter (Android + iOS only) — set up as legacy free drop-in replacement for `flutter_image_compress` with zero third-party platform dependencies on either Android or iOS, and no CocoaPods.
 
 **Platforms:** Android, iOS. No macOS/Web/OpenHarmony support (unlike the upstream federated plugin).
 
@@ -19,6 +19,7 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 | keepExif (iOS) | via Mantle/SYMetadata | native ImageIO |
 | keepExif (Android) | via androidx.exifinterface | native android.media.ExifInterface |
 | iOS language | Objective-C | Swift |
+| Android language | Java + Kotlin | Kotlin |
 | iOS packaging | CocoaPods | SPM only |
 | AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
 | iOS deployment target | 9.0 | 15.0 |

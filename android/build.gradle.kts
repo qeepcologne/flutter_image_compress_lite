@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.fluttercandies.flutter_image_compress"
-    compileSdk = 36
+    compileSdk = 37
 
     sourceSets {
         getByName("main") {
@@ -14,10 +14,5 @@ android {
 
     defaultConfig {
         minSdk = 24
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
