@@ -1,6 +1,6 @@
 # flutter_image_compress_lite
 
-Standalone image compression plugin for Flutter (Android + iOS only) — set up as legacy free drop-in replacement for `flutter_image_compress` with zero third-party platform dependencies on either Android or iOS, and no CocoaPods.
+Standalone image compression plugin for Flutter (Android + iOS only) — a legacy-free drop-in replacement for `flutter_image_compress` with zero third-party platform dependencies on either Android or iOS, and no CocoaPods.
 
 **Platforms:** Android, iOS. No macOS/Web/OpenHarmony support (unlike the upstream federated plugin).
 
@@ -54,7 +54,11 @@ Same `FlutterImageCompress` API as the upstream — just change the import.
 - WebP encoding on iOS (decoding works on iOS 14+)
 - HEIC encoding on Android < API 30 (Android 11)
 
-`CompressError` is thrown for invalid input (empty image, missing file, `androidOomRetries <= 0`).
+`CompressError` is thrown for invalid input caught Dart-side (empty image bytes, missing file, `androidOomRetries <= 0`).
+
+`PlatformException` is thrown by the native side when something goes wrong below the channel:
+- **iOS** — `FILE_NOT_FOUND` (could not read the file) or `BAD_IMAGE` (could not decode it).
+- **Android** — `UNKNOWN_FORMAT` if the wire format index doesn't match a known `CompressFormat` (defensive; unreachable from the public Dart API).
 
 ## License
 
