@@ -25,19 +25,16 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
-            "showLog" -> result.success(handleLog(call))
+            "showLog" -> {
+                showLog = call.arguments<Boolean>() == true
+                result.success(null)
+            }
             "compressWithList" -> CompressListHandler(call, result, executor).handle(context)
             "compressWithFile" -> CompressFileHandler(call, result, executor).handle(context)
             "compressWithFileAndGetFile" -> CompressFileHandler(call, result, executor).handleGetFile(context)
             "getSystemVersion" -> result.success(Build.VERSION.SDK_INT)
             else -> result.notImplemented()
         }
-    }
-
-    private fun handleLog(call: MethodCall): Int {
-        val arg = call.arguments<Boolean>()
-        showLog = (arg == true)
-        return 1
     }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
