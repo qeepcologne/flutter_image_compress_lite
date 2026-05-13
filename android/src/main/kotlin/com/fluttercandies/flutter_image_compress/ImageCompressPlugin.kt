@@ -4,36 +4,31 @@ import android.content.Context
 import android.os.Build
 import com.fluttercandies.flutter_image_compress.core.CompressFileHandler
 import com.fluttercandies.flutter_image_compress.core.CompressListHandler
-import com.fluttercandies.flutter_image_compress.format.CompressFormat
-import com.fluttercandies.flutter_image_compress.format.FormatRegister
-import com.fluttercandies.flutter_image_compress.handle.common.CommonHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
     private var channel: MethodChannel? = null
+    private var executor: ExecutorService = newExecutor()
 
     companion object {
         var showLog = false
-    }
 
-    init {
-        FormatRegister.registerFormat(CommonHandler(CompressFormat.JPEG))
-        FormatRegister.registerFormat(CommonHandler(CompressFormat.PNG))
-        FormatRegister.registerFormat(CommonHandler(CompressFormat.HEIC))
-        FormatRegister.registerFormat(CommonHandler(CompressFormat.WEBP))
+        private fun newExecutor(): ExecutorService = Executors.newFixedThreadPool(8)
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "showLog" -> result.success(handleLog(call))
-            "compressWithList" -> CompressListHandler(call, result).handle(context)
-            "compressWithFile" -> CompressFileHandler(call, result).handle(context)
-            "compressWithFileAndGetFile" -> CompressFileHandler(call, result).handleGetFile(context)
+            "compressWithList" -> CompressListHandler(call, result, executor).handle(context)
+            "compressWithFile" -> CompressFileHandler(call, result, executor).handle(context)
+            "compressWithFileAndGetFile" -> CompressFileHandler(call, result, executor).handleGetFile(context)
             "getSystemVersion" -> result.success(Build.VERSION.SDK_INT)
             else -> result.notImplemented()
         }
@@ -47,6 +42,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         context = binding.applicationContext
+        if (executor.isShutdown) executor = newExecutor()
         channel = MethodChannel(binding.binaryMessenger, "flutter_image_compress")
         channel?.setMethodCallHandler(this)
     }
@@ -54,5 +50,6 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel?.setMethodCallHandler(null)
         channel = null
+        executor.shutdown()
     }
 }

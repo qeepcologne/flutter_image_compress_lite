@@ -18,6 +18,7 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 | JPEG/PNG | yes | yes |
 | keepExif (iOS) | via Mantle/SYMetadata | native ImageIO |
 | keepExif (Android) | via ExifInterface | via ExifInterface |
+| iOS language | Objective-C | Swift |
 | iOS packaging | CocoaPods | SPM only |
 | AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
 | iOS deployment target | 9.0 | 15.0 |

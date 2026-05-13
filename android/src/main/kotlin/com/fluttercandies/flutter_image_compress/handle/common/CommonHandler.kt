@@ -107,7 +107,13 @@ class CommonHandler(override val type: CompressFormat) : FormatHandler {
     private fun makeOptions(inSampleSize: Int): BitmapFactory.Options {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = false
-        options.inPreferredConfig = Bitmap.Config.RGB_565
+        // Only JPEG is opaque; PNG/WebP/HEIC may carry alpha and would silently
+        // lose transparency under RGB_565.
+        options.inPreferredConfig = if (type == CompressFormat.JPEG) {
+            Bitmap.Config.RGB_565
+        } else {
+            Bitmap.Config.ARGB_8888
+        }
         options.inSampleSize = inSampleSize
         return options
     }

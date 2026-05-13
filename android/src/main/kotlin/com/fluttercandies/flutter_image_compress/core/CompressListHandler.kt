@@ -10,10 +10,15 @@ import com.fluttercandies.flutter_image_compress.logger.log
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.ExecutorService
 
-class CompressListHandler(private val call: MethodCall, result: MethodChannel.Result) : ResultHandler(result) {
+class CompressListHandler(
+    private val call: MethodCall,
+    result: MethodChannel.Result,
+    executor: ExecutorService,
+) : ResultHandler(result, executor) {
     fun handle(context: Context) {
-        threadPool.execute {
+        executor.execute {
             @Suppress("UNCHECKED_CAST") val args: List<Any> = call.arguments as List<Any>
             val arr = args[0] as ByteArray
             var minWidth = args[1] as Int
@@ -21,18 +26,17 @@ class CompressListHandler(private val call: MethodCall, result: MethodChannel.Re
             val quality = args[3] as Int
             val rotate = args[4] as Int
             val autoCorrectionAngle = args[5] as Boolean
-            val format = CompressFormat.fromIndex(args[6] as Int)
+            val formatIndex = args[6] as Int
+            val format = CompressFormat.fromIndex(formatIndex)
             val keepExif = args[7] as Boolean
             val inSampleSize = args[8] as Int
             if (format == null) {
-                log("No support format.")
-                reply(null)
+                replyError("UNKNOWN_FORMAT", "unknown format index $formatIndex")
                 return@execute
             }
             val formatHandler = FormatRegister.findFormat(format)
             if (formatHandler == null) {
-                log("No support format.")
-                reply(null)
+                replyError("UNKNOWN_FORMAT", "no handler registered for ${format.typeName}")
                 return@execute
             }
             val exifRotate = if (autoCorrectionAngle) Exif.getRotationDegrees(arr) else 0
