@@ -21,7 +21,3 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
-
-dependencies {
-    implementation("androidx.exifinterface:exifinterface:1.4.2")
-}
