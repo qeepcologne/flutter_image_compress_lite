@@ -14,11 +14,12 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 | Android deps | exifinterface, heifwriter, commons-io | **none** |
 | CocoaPods required | yes (transitive) | **no** |
 | JPEG/PNG | yes | yes |
-| HEIC/HEIF | yes (heifwriter, API 28+) | yes (native, API 30+) |
+| iOS HEIC/HEIF | yes | yes |
+| Android HEIC/HEIF | yes (heifwriter, API 28+) | yes (native, API 30+) |
 | iOS WebP decoding | via SDWebImage | native (iOS 14+) |
 | iOS WebP encoding | via SDWebImage | not supported |
-| keepExif (iOS) | via Mantle/SYMetadata | native ImageIO |
-| keepExif (Android) | via androidx.exifinterface | native android.media.ExifInterface |
+| iOS keepExif | via Mantle/SYMetadata | native ImageIO |
+| Android keepExif | via androidx.exifinterface | native android.media.ExifInterface |
 | iOS language | Objective-C | Swift |
 | Android language | Java + Kotlin | Kotlin |
 | iOS packaging | CocoaPods | SPM only |
