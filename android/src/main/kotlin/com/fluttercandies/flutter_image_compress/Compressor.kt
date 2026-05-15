@@ -4,8 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.os.Build
+import androidx.heifwriter.HeifWriter
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.OutputStream
 import kotlin.math.max
 import kotlin.math.min
@@ -17,18 +18,15 @@ enum class CompressFormat(val typeName: String) {
     HEIC("heic"),
     WEBP("webp");
 
-    /// Null when this OS version cannot encode the format
-    /// (currently only HEIC, which needs API 30+).
+    /// Null for HEIC, which goes through androidx.heifwriter instead of
+    /// `Bitmap.compress()`. The platform `Bitmap.CompressFormat` enum has no
+    /// HEIC entry at any API level.
     val bitmapFormat: Bitmap.CompressFormat?
         get() = when (this) {
             JPEG -> Bitmap.CompressFormat.JPEG
             PNG -> Bitmap.CompressFormat.PNG
             WEBP -> Bitmap.CompressFormat.WEBP
-            HEIC -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                Bitmap.CompressFormat.HEIC
-            } else {
-                null
-            }
+            HEIC -> null
         }
 
     companion object {
@@ -51,7 +49,7 @@ internal object Compressor {
         inSampleSize: Int,
     ) {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions(format, inSampleSize))
-        val encoded = compress(bitmap, format, minWidth, minHeight, quality, rotate)
+        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(bytes) }
     }
 
@@ -71,7 +69,7 @@ internal object Compressor {
         if (oomRetries <= 0) return
         try {
             val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format, inSampleSize))
-            val encoded = compress(bitmap, format, minWidth, minHeight, quality, rotate)
+            val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
             writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
         } catch (e: OutOfMemoryError) {
             encodeFile(
@@ -83,6 +81,7 @@ internal object Compressor {
     }
 
     private fun compress(
+        context: Context,
         bitmap: Bitmap,
         format: CompressFormat,
         minWidth: Int,
@@ -90,24 +89,44 @@ internal object Compressor {
         quality: Int,
         rotate: Int,
     ): ByteArray {
-        val bitmapFormat = requireNotNull(format.bitmapFormat) {
-            "${format.typeName} encoding is not available on this OS version"
-        }
         val w = bitmap.width.toFloat()
         val h = bitmap.height.toFloat()
         log("src width = $w")
         log("src height = $h")
         val scale = bitmap.calcScale(minWidth, minHeight)
         log("scale = $scale")
-        val destW = w / scale
-        val destH = h / scale
+        val destW = (w / scale).toInt()
+        val destH = (h / scale).toInt()
         log("dst width = $destW")
         log("dst height = $destH")
-        val out = ByteArrayOutputStream()
-        Bitmap.createScaledBitmap(bitmap, destW.toInt(), destH.toInt(), true)
-            .rotate(rotate)
-            .compress(bitmapFormat, quality, out)
-        return out.toByteArray()
+        val scaled = Bitmap.createScaledBitmap(bitmap, destW, destH, true).rotate(rotate)
+        return if (format == CompressFormat.HEIC) {
+            encodeHeic(context, scaled, quality)
+        } else {
+            val out = ByteArrayOutputStream()
+            scaled.compress(format.bitmapFormat!!, quality, out)
+            out.toByteArray()
+        }
+    }
+
+    // HeifWriter only writes to a file path, so we round-trip through cacheDir.
+    private fun encodeHeic(context: Context, bitmap: Bitmap, quality: Int): ByteArray {
+        val tmp = File.createTempFile("heic_", ".heic", context.cacheDir)
+        try {
+            val writer = HeifWriter.Builder(
+                tmp.absolutePath,
+                bitmap.width,
+                bitmap.height,
+                HeifWriter.INPUT_MODE_BITMAP,
+            ).setQuality(quality).setMaxImages(1).build()
+            writer.start()
+            writer.addBitmap(bitmap)
+            writer.stop(5000)
+            writer.close()
+            return tmp.readBytes()
+        } finally {
+            tmp.delete()
+        }
     }
 
     private fun writeOutput(

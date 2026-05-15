@@ -16,3 +16,7 @@ android {
         minSdk = 24
     }
 }
+
+dependencies {
+    implementation("androidx.heifwriter:heifwriter:1.1.0")
+}

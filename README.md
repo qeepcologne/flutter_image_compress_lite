@@ -1,6 +1,6 @@
 # flutter_image_compress_lite
 
-Standalone image compression plugin for Flutter (Android + iOS only) — a legacy-free drop-in replacement for `flutter_image_compress` with zero third-party platform dependencies on either Android or iOS, and no CocoaPods.
+Standalone image compression plugin for Flutter (Android + iOS only) — a legacy-free drop-in replacement for `flutter_image_compress`. iOS has zero third-party dependencies and no CocoaPods; Android keeps only `androidx.heifwriter` for HEIC encoding (no platform-native HEIC encoder exists in `Bitmap.CompressFormat`).
 
 **Platforms:** Android, iOS. No macOS/Web/OpenHarmony support (unlike the upstream federated plugin).
 
@@ -11,11 +11,11 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 | | flutter_image_compress | flutter_image_compress_lite |
 |---|---|---|
 | iOS deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
-| Android deps | exifinterface, heifwriter, commons-io | **none** |
+| Android deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
 | CocoaPods required | yes (transitive) | **no** |
 | JPEG/PNG | yes | yes |
 | iOS HEIC/HEIF | yes | yes |
-| Android HEIC/HEIF | yes (heifwriter, API 28+) | yes (native, API 30+) |
+| Android HEIC/HEIF | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
 | iOS WebP decoding | via SDWebImage | native (iOS 14+) |
 | iOS WebP encoding | via SDWebImage | not supported |
 | iOS keepExif | via Mantle/SYMetadata | native ImageIO |
@@ -52,7 +52,7 @@ Same `FlutterImageCompress` API as the upstream — just change the import.
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
 - WebP encoding on iOS (decoding works on iOS 14+)
-- HEIC encoding on Android < API 30 (Android 11)
+- HEIC encoding on Android < API 28 (Android 9)
 
 `CompressError` is thrown for invalid input caught Dart-side (empty image bytes, missing file, `androidOomRetries <= 0`).
 
