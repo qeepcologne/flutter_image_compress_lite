@@ -145,7 +145,8 @@ struct Request: Sendable {
         case "compressWithList":
             guard args.count >= 8,
                   let typed = args[0] as? FlutterStandardTypedData,
-                  let format = (args[6] as? NSNumber)?.intValue.flatMap(CompressFormat.init(rawValue:))
+                  let formatIndex = (args[6] as? NSNumber)?.intValue,
+                  let format = CompressFormat(rawValue: formatIndex)
             else { throw ParseError.badArgs }
             self.source = .bytes(typed.data)
             self.targetPath = nil
@@ -154,7 +155,8 @@ struct Request: Sendable {
         case "compressWithFile":
             guard args.count >= 8,
                   let path = args[0] as? String,
-                  let format = (args[6] as? NSNumber)?.intValue.flatMap(CompressFormat.init(rawValue:))
+                  let formatIndex = (args[6] as? NSNumber)?.intValue,
+                  let format = CompressFormat(rawValue: formatIndex)
             else { throw ParseError.badArgs }
             self.source = .file(path: path)
             self.targetPath = nil
@@ -164,7 +166,8 @@ struct Request: Sendable {
             guard args.count >= 9,
                   let path = args[0] as? String,
                   let target = args[4] as? String,
-                  let format = (args[7] as? NSNumber)?.intValue.flatMap(CompressFormat.init(rawValue:))
+                  let formatIndex = (args[7] as? NSNumber)?.intValue,
+                  let format = CompressFormat(rawValue: formatIndex)
             else { throw ParseError.badArgs }
             self.source = .file(path: path)
             self.targetPath = target
