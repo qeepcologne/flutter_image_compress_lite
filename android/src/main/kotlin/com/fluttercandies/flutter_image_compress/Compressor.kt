@@ -11,6 +11,10 @@ import java.io.OutputStream
 import kotlin.math.max
 import kotlin.math.min
 
+/// Carries a wire error code (mirrors the iOS FlutterError codes) so the plugin can
+/// surface decode/read/write failures to Dart as a PlatformException instead of null.
+internal class CompressException(val code: String, message: String?) : Exception(message)
+
 /// Order must match the Dart `CompressFormat` enum so `index` is the wire value.
 enum class CompressFormat(val typeName: String) {
     JPEG("jpeg"),
@@ -49,6 +53,7 @@ internal object Compressor {
         inSampleSize: Int,
     ) {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions(format, inSampleSize))
+            ?: throw CompressException("BAD_IMAGE", "could not decode image bytes")
         val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(bytes) }
     }
@@ -67,8 +72,10 @@ internal object Compressor {
         oomRetries: Int,
     ) {
         if (oomRetries <= 0) return
+        if (!File(path).exists()) throw CompressException("FILE_NOT_FOUND", "could not read $path")
         try {
             val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format, inSampleSize))
+                ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
             val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
             writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
         } catch (e: OutOfMemoryError) {

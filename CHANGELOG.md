@@ -1,7 +1,10 @@
 ## 2.3.0
 
-Internal cleanup — no public API or runtime-behavior changes.
+Internal cleanup — no public API changes.
 
+- **Android (behavior change)**: read/decode/write failures now throw a `PlatformException` instead of silently resolving to `null`, matching iOS. New wire codes: `FILE_NOT_FOUND`, `BAD_IMAGE`, `WRITE_FAILED`, plus a catch-all `COMPRESS_ERROR`. Callers that previously branched on a `null` result will now see an exception for genuinely broken input. See the README "Errors" section.
+- **Android**: the three `compress*` handlers now share a single index-driven `CompressArgs` parser (mirroring the iOS `CompressParams`) and a `replyCatching` helper, replacing the per-handler positional unpacking and try/catch. No wire-format change.
+- **Dart**: `compressWithFile` / `compressAndGetFile` now check source existence with async `File.exists()` instead of `existsSync()`, so the entry points no longer block the isolate on filesystem I/O.
 - **iOS**: migrated the method-channel handlers to Swift structured concurrency (Swift 6.2). The manual `DispatchQueue.global(qos:).async { … }` hop is replaced by a `Task` calling a single `@concurrent` `run(_:)` worker; the three near-identical handlers collapse into a `Sendable` `Request` parser plus that one worker. Arguments are now read out of `FlutterMethodCall` synchronously on the calling thread, so no non-`Sendable` Flutter type crosses the concurrency boundary. Builds under the Swift 6 language mode with strict concurrency.
 - **iOS BUILD REQUIREMENT**: building for iOS now requires **Xcode 26+** (Swift 6.2 toolchain). The runtime floor is unchanged — still **iOS 15+** (Swift concurrency back-deploys; no iOS-18-only APIs such as `Mutex` are used).
 

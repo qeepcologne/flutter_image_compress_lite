@@ -75,7 +75,7 @@ class FlutterImageCompress {
     if (androidOomRetries <= 0) {
       throw CompressError('androidOomRetries must be greater than 0');
     }
-    if (!File(path).existsSync()) {
+    if (!await File(path).exists()) {
       throw CompressError('Image file does not exist in $path.');
     }
     await _validator.checkSupportPlatform(format);
@@ -111,7 +111,7 @@ class FlutterImageCompress {
     if (androidOomRetries <= 0) {
       throw CompressError('androidOomRetries must be greater than 0');
     }
-    if (!File(path).existsSync()) {
+    if (!await File(path).exists()) {
       throw CompressError('Image file does not exist in $path.');
     }
     if (path == targetPath) {

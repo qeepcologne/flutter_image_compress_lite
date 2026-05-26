@@ -59,9 +59,14 @@ Same `FlutterImageCompress` API as the upstream — just change the import.
 
 `CompressError` is thrown for invalid input caught Dart-side (empty image bytes, missing file, `androidOomRetries <= 0`).
 
-`PlatformException` is thrown by the native side when something goes wrong below the channel:
-- **iOS** — `FILE_NOT_FOUND` (could not read the file) or `BAD_IMAGE` (could not decode it).
-- **Android** — `UNKNOWN_FORMAT` if the wire format index doesn't match a known `CompressFormat` (defensive; unreachable from the public Dart API).
+`PlatformException` is thrown by the native side when something goes wrong below the channel. Both platforms surface the same core codes (Android previously swallowed these to `null`; it now matches iOS):
+- `FILE_NOT_FOUND` — the source file could not be read.
+- `BAD_IMAGE` — the source bytes/file could not be decoded into an image.
+- `WRITE_FAILED` — the compressed output could not be written to the target path (`compressAndGetFile` only).
+
+Platform-specific, defensive codes (unreachable from the public Dart API):
+- **Android** — `UNKNOWN_FORMAT` (wire format index doesn't match a known `CompressFormat`) and `COMPRESS_ERROR` (any other native failure, e.g. a HEIC-encoder error).
+- **iOS** — `BAD_ARGS` (malformed channel arguments).
 
 ## License
 
