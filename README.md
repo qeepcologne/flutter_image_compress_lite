@@ -20,10 +20,11 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 | iOS WebP encoding | via SDWebImage | not supported |
 | iOS keepExif | via Mantle/SYMetadata | native ImageIO |
 | Android keepExif | via androidx.exifinterface | native android.media.ExifInterface |
-| iOS language | Objective-C | Swift |
+| iOS language | Objective-C | Swift 6 |
 | Android language | Java + Kotlin | Kotlin |
 | iOS packaging | CocoaPods | SPM only |
 | iOS deployment target | 9.0 | 15.0 |
+| Xcode (to build iOS) | any recent | 26+ (Swift 6.2 toolchain) |
 | Android minSdk | 21 | 24 |
 | AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
 | Dart/Flutter | >=2.12/>=2.0 | ^3.11/>=3.41 |
@@ -34,7 +35,7 @@ Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_imag
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.2.0
+  flutter_image_compress_lite: ^2.3.0
 ```
 
 ```dart
@@ -47,6 +48,8 @@ final result = await FlutterImageCompress.compressAndGetFile(
 ```
 
 Same `FlutterImageCompress` API as the upstream — just change the import.
+
+> **Build requirement:** the iOS side is written against the Swift 6.2 toolchain (approachable concurrency / `@concurrent`), so building for iOS requires **Xcode 26 or newer**. The runtime floor is unchanged — the compiled plugin still runs on **iOS 15+**.
 
 ## Errors
 

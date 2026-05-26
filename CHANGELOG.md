@@ -1,3 +1,10 @@
+## 2.3.0
+
+Internal cleanup — no public API or runtime-behavior changes.
+
+- **iOS**: migrated the method-channel handlers to Swift structured concurrency (Swift 6.2). The manual `DispatchQueue.global(qos:).async { … }` hop is replaced by a `Task` calling a single `@concurrent` `run(_:)` worker; the three near-identical handlers collapse into a `Sendable` `Request` parser plus that one worker. Arguments are now read out of `FlutterMethodCall` synchronously on the calling thread, so no non-`Sendable` Flutter type crosses the concurrency boundary. Builds under the Swift 6 language mode with strict concurrency.
+- **iOS BUILD REQUIREMENT**: building for iOS now requires **Xcode 26+** (Swift 6.2 toolchain). The runtime floor is unchanged — still **iOS 15+** (Swift concurrency back-deploys; no iOS-18-only APIs such as `Mutex` are used).
+
 ## 2.2.0
 
 Internal cleanup — no public API or behavior changes.
