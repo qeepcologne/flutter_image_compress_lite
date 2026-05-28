@@ -56,7 +56,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    // MARK: - Method handlers
+    // Method handlers
 
     private fun compressList(call: MethodCall, result: Result) {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
@@ -126,7 +126,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     private fun rotatedTarget(minWidth: Int, minHeight: Int, exifRotate: Int): Pair<Int, Int> =
         if (exifRotate == 90 || exifRotate == 270) minHeight to minWidth else minWidth to minHeight
 
-    // MARK: - Reply helpers (post back on the main thread)
+    // Reply helpers (post back on the main thread)
 
     /// Runs the encode [block] and replies on the main thread, mapping failures to the same
     /// wire error codes the iOS side uses instead of silently returning null.
