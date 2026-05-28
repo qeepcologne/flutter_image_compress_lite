@@ -16,8 +16,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a dro
 | JPEG / PNG | yes | yes |
 | HEIC / HEIF (iOS) | yes | yes |
 | HEIC / HEIF (Android) | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
-| WebP decoding (iOS) | via SDWebImage | native (iOS 14+) |
-| WebP encoding (iOS) | via SDWebImage | not supported |
+| WebP (iOS) | encode + decode (SDWebImage) | decode only (native, iOS 14+) |
 | WebP (Android) | yes (native) | yes (native) |
 | **Android** | | |
 | Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
