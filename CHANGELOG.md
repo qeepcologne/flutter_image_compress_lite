@@ -1,3 +1,7 @@
+## 2.3.1
+
+- Docs and metadata only — README cleanup, package description, and a fork copyright line. No API or behavior changes.
+
 ## 2.3.0
 
 Internal cleanup — no public API changes.
