@@ -8,26 +8,29 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a dro
 
 | | flutter_image_compress | flutter_image_compress_lite |
 |---|---|---|
-| iOS deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
-| Android deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
-| CocoaPods required | yes (transitive) | **no** |
-| JPEG/PNG | yes | yes |
-| iOS HEIC/HEIF | yes | yes |
-| Android HEIC/HEIF | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
-| iOS WebP decoding | via SDWebImage | native (iOS 14+) |
-| iOS WebP encoding | via SDWebImage | not supported |
-| iOS keepExif | via Mantle/SYMetadata | native ImageIO |
-| Android keepExif | via androidx.exifinterface | native android.media.ExifInterface |
-| iOS language | Objective-C | Swift 6 |
-| Android language | Java + Kotlin | Kotlin |
-| iOS packaging | CocoaPods | SPM only |
-| iOS deployment target | 9.0 | 15.0 |
-| Xcode (to build iOS) | any (no Swift floor) | 26+ (Swift 6.2 toolchain) |
-| Android minSdk | 21 | 24 |
-| AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
-| Dart/Flutter | >=2.12/>=2.0 | ^3.11/>=3.41 |
+| **Architecture & platforms** | | |
 | Architecture | federated (3 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
+| Dart / Flutter | >=2.12 / >=2.0 | ^3.11 / >=3.41 |
+| **Image formats** | | |
+| JPEG / PNG | yes | yes |
+| HEIC / HEIF (iOS) | yes | yes |
+| HEIC / HEIF (Android) | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
+| WebP decoding (iOS) | via SDWebImage | native (iOS 14+) |
+| WebP encoding (iOS) | via SDWebImage | not supported |
+| **Android** | | |
+| Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
+| keepExif | androidx.exifinterface | native android.media.ExifInterface |
+| Language | Java + Kotlin | Kotlin |
+| minSdk | 21 | 24 |
+| AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
+| **iOS** | | |
+| Native deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
+| keepExif | Mantle / SYMetadata | native ImageIO |
+| Language | Objective-C | Swift 6 |
+| Packaging | CocoaPods | **SPM only** |
+| Deployment target | 9.0 | 15.0 |
+| Xcode (to build) | any (no Swift floor) | 26+ (Swift 6.2 toolchain) |
 
 ## Usage
 
