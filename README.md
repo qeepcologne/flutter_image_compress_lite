@@ -8,7 +8,6 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a dro
 
 | | flutter_image_compress | flutter_image_compress_lite |
 |---|---|---|
-| **Architecture & platforms** | | |
 | Architecture | federated (3 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
 | Dart / Flutter | >=2.12 / >=2.0 | ^3.11 / >=3.41 |
@@ -20,13 +19,13 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a dro
 | WebP (Android) | yes (native) | yes (native) |
 | **Android** | | |
 | Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
-| keepExif | androidx.exifinterface | native android.media.ExifInterface |
+| keepExif | androidx.exifinterface | **native android.media.ExifInterface** |
 | Language | Java + Kotlin | Kotlin |
 | minSdk | 21 | 24 |
 | AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
 | **iOS** | | |
 | Native deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
-| keepExif | Mantle / SYMetadata | native ImageIO |
+| keepExif | Mantle / SYMetadata | **native ImageIO** |
 | Language | Objective-C | Swift 6 |
 | Packaging | CocoaPods | **SPM only** |
 | Deployment target | 9.0 | 15.0 |
