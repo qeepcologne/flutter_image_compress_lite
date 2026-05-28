@@ -50,8 +50,6 @@ final result = await FlutterImageCompress.compressAndGetFile(
 
 Same `FlutterImageCompress` API as the upstream — just change the import.
 
-> **Build requirement:** the iOS side is written against the Swift 6.2 toolchain (approachable concurrency / `@concurrent`), so building for iOS requires **Xcode 26 or newer**. The runtime floor is unchanged — the compiled plugin still runs on **iOS 15+**.
-
 ## Errors
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
@@ -65,7 +63,7 @@ Same `FlutterImageCompress` API as the upstream — just change the import.
 - `BAD_IMAGE` — the source bytes/file could not be decoded into an image.
 - `WRITE_FAILED` — the compressed output could not be written to the target path (`compressAndGetFile` only).
 
-Platform-specific, defensive codes (unreachable from the public Dart API):
+It can also carry these platform-specific, defensive codes (unreachable from the public Dart API):
 - **Android** — `UNKNOWN_FORMAT` (wire format index doesn't match a known `CompressFormat`) and `COMPRESS_ERROR` (any other native failure, e.g. a HEIC-encoder error).
 - **iOS** — `BAD_ARGS` (malformed channel arguments).
 
