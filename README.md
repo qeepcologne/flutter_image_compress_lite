@@ -1,14 +1,10 @@
 # flutter_image_compress_lite
 
-Standalone image compression plugin for Flutter (Android + iOS only) — a legacy-free drop-in replacement for `flutter_image_compress`. iOS has zero third-party dependencies and no CocoaPods; Android keeps only `androidx.heifwriter` for HEIC encoding (no platform-native HEIC encoder exists in `Bitmap.CompressFormat`).
+Standalone image-compression plugin for Flutter on **Android and iOS** — a drop-in replacement for [`flutter_image_compress`](https://github.com/fluttercandies/flutter_image_compress), collapsed into a single package (no federated architecture, hence no macOS/Web/OpenHarmony).
 
-**Platforms:** Android, iOS. No macOS/Web/OpenHarmony support (unlike the upstream federated plugin).
-
-**Purpose:** a deliberately minimal, legacy-free build for **current toolchains only**. It carries minimal native dependencies (no CocoaPods, no SDWebImage/Mantle) and targets the latest AGP, Gradle, Flutter, and Xcode rather than maintaining backward compatibility with older ones. If you need to support older toolchains or CocoaPods, use upstream `flutter_image_compress` instead.
+**Purpose:** minimal and legacy-free, for **current toolchains only** — minimal native dependencies (no CocoaPods, no SDWebImage/Mantle), built against the latest AGP, Gradle, Flutter, and Xcode rather than older ones. If you need older toolchains or CocoaPods, use the upstream package instead.
 
 ## What changed vs upstream
-
-Based on [flutter_image_compress](https://github.com/fluttercandies/flutter_image_compress), merged into a single standalone package (no federated plugin architecture).
 
 | | flutter_image_compress | flutter_image_compress_lite |
 |---|---|---|
