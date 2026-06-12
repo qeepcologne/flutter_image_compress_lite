@@ -89,7 +89,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
                 Compressor.encodeFile(
                     context, p.format, path, out,
                     w, h, p.quality, p.rotate + exifRotate,
-                    p.keepExif, p.inSampleSize, p.oomRetries,
+                    p.keepExif, p.inSampleSize,
                 )
                 out.toByteArray()
             }
@@ -110,7 +110,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
                     Compressor.encodeFile(
                         context, p.format, path, out,
                         w, h, p.quality, p.rotate + exifRotate,
-                        p.keepExif, p.inSampleSize, p.oomRetries,
+                        p.keepExif, p.inSampleSize,
                     )
                 }
             } catch (e: CompressException) {
@@ -136,6 +136,11 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         } catch (e: CompressException) {
             if (showLog) e.printStackTrace()
             result.postError(e.code, e.message ?: e.code)
+        } catch (e: OutOfMemoryError) {
+            // BitmapFactory can OOM on huge inputs; surface it as a channel error rather than
+            // letting it kill the executor thread and hang the Dart Future.
+            if (showLog) e.printStackTrace()
+            result.postError("COMPRESS_ERROR", "out of memory: ${e.message ?: "decode failed"}")
         } catch (e: Exception) {
             if (showLog) e.printStackTrace()
             result.postError("COMPRESS_ERROR", e.message ?: e.toString())
@@ -158,8 +163,8 @@ internal fun log(any: Any?) {
 }
 
 /// The shared channel arguments, parsed by position. All three calls share the same layout
-/// from [rotateIndex] onward (rotate, autoCorrectionAngle, format, keepExif, inSampleSize,
-/// [oomRetries]); only compressWithFileAndGetFile shifts it by one to insert `targetPath` at 4.
+/// from [rotateIndex] onward (rotate, autoCorrectionAngle, format, keepExif, inSampleSize);
+/// only compressWithFileAndGetFile shifts it by one to insert `targetPath` at 4.
 /// Returns null when the format index doesn't map to a known [CompressFormat]. Mirrors the
 /// iOS `CompressParams(args:rotateIndex:)` so the two platforms parse the wire format the same way.
 private class CompressArgs private constructor(
@@ -171,7 +176,6 @@ private class CompressArgs private constructor(
     val autoCorrectionAngle: Boolean,
     val keepExif: Boolean,
     val inSampleSize: Int,
-    val oomRetries: Int,
 ) {
     companion object {
         operator fun invoke(args: List<Any>, rotateIndex: Int): CompressArgs? {
@@ -185,7 +189,6 @@ private class CompressArgs private constructor(
                 autoCorrectionAngle = args[rotateIndex + 1] as Boolean,
                 keepExif = args[rotateIndex + 3] as Boolean,
                 inSampleSize = args[rotateIndex + 4] as Int,
-                oomRetries = (args.getOrNull(rotateIndex + 5) as? Int) ?: 0,
             )
         }
     }

@@ -1,3 +1,7 @@
+## 2.4.0
+
+- **BREAKING**: removed the `androidOomRetries` parameter from `compressWithFile` and `compressAndGetFile`. The old retry-on-OOM logic was Android-only and silently produced an empty result when retries exhausted; now an `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException` like other native failures. Callers that passed the argument need to drop it.
+
 ## 2.3.1
 
 - Docs and metadata only — README cleanup, package description, and a fork copyright line. No API or behavior changes.

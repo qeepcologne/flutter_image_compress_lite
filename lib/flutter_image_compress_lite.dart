@@ -70,11 +70,7 @@ class FlutterImageCompress {
     bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
-    int androidOomRetries = _Defaults.androidOomRetries,
   }) async {
-    if (androidOomRetries <= 0) {
-      throw CompressError('androidOomRetries must be greater than 0');
-    }
     if (!await File(path).exists()) {
       throw CompressError('Image file does not exist in $path.');
     }
@@ -89,7 +85,6 @@ class FlutterImageCompress {
       format.nativeValue,
       keepExif,
       inSampleSize,
-      androidOomRetries,
     ]);
     return result;
   }
@@ -106,11 +101,7 @@ class FlutterImageCompress {
     bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
-    int androidOomRetries = _Defaults.androidOomRetries,
   }) async {
-    if (androidOomRetries <= 0) {
-      throw CompressError('androidOomRetries must be greater than 0');
-    }
     if (!await File(path).exists()) {
       throw CompressError('Image file does not exist in $path.');
     }
@@ -132,7 +123,6 @@ class FlutterImageCompress {
         format.nativeValue,
         keepExif,
         inSampleSize,
-        androidOomRetries,
       ],
     );
     if (result == null) {
@@ -182,5 +172,4 @@ class _Defaults {
   static const bool autoCorrectionAngle = true;
   static const CompressFormat format = .jpeg;
   static const bool keepExif = false;
-  static const int androidOomRetries = 5;
 }

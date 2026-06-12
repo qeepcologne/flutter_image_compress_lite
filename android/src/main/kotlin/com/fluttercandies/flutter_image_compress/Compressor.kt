@@ -69,22 +69,12 @@ internal object Compressor {
         rotate: Int,
         keepExif: Boolean,
         inSampleSize: Int,
-        oomRetries: Int,
     ) {
-        if (oomRetries <= 0) return
         if (!File(path).exists()) throw CompressException("FILE_NOT_FOUND", "could not read $path")
-        try {
-            val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format, inSampleSize))
-                ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
-            val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
-            writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
-        } catch (e: OutOfMemoryError) {
-            encodeFile(
-                context, format, path, output,
-                minWidth, minHeight, quality, rotate,
-                keepExif, inSampleSize * 2, oomRetries - 1,
-            )
-        }
+        val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format, inSampleSize))
+            ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
+        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
+        writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
     }
 
     private fun compress(
