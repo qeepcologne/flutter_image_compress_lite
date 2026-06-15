@@ -1,3 +1,7 @@
+## 2.4.1
+
+- Accept `.heif` as a valid target extension for HEIC encoding alongside `.heic` — same container bytes, different naming convention. Previously tripped the debug-mode filename assert.
+
 ## 2.4.0
 
 - **BREAKING**: removed the `androidOomRetries` parameter from `compressWithFile` and `compressAndGetFile`. The old retry-on-OOM logic was Android-only and silently produced an empty result when retries exhausted; now an `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException` like other native failures. Callers that passed the argument need to drop it.

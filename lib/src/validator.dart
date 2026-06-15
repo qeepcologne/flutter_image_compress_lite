@@ -10,20 +10,11 @@ class FlutterImageCompressValidator {
   final MethodChannel channel;
 
   void checkFileNameAndFormat(String name, CompressFormat format) {
-    name = name.toLowerCase();
-    switch (format) {
-      case .jpeg:
-        assert(name.endsWith('.jpg') || name.endsWith('.jpeg'),
-            'The jpeg format name must end with jpg or jpeg.');
-      case .png:
-        assert(name.endsWith('.png'), 'The png format name must end with png.');
-      case .heic:
-        assert(
-            name.endsWith('.heic'), 'The heic format name must end with heic.');
-      case .webp:
-        assert(
-            name.endsWith('.webp'), 'The webp format name must end with webp.');
-    }
+    final lower = name.toLowerCase();
+    assert(
+      format.suffixes.any(lower.endsWith),
+      'The ${format.name} format name must end with ${format.suffixes.join(' or ')}.',
+    );
   }
 
   /// Validates the *encoding* target — input formats are auto-detected by
