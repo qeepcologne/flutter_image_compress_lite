@@ -1,3 +1,10 @@
+/// Minimal, legacy-free image compression for Flutter (Android + iOS).
+///
+/// Drop-in replacement for `flutter_image_compress` with no CocoaPods, SPM
+/// only on iOS, and no federated sub-packages. See [FlutterImageCompress]
+/// for the entry points.
+library;
+
 import 'dart:io';
 import 'dart:typed_data' as typed_data;
 
