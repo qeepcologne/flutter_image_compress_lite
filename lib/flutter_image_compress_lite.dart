@@ -34,11 +34,15 @@ export 'src/compress_format.dart';
 /// already smaller than the minimum on both axes are returned at their
 /// original size (never upscaled).
 class FlutterImageCompress {
+  FlutterImageCompress._();
+
   static const _channel = MethodChannel('flutter_image_compress');
 
   static final FlutterImageCompressValidator _validator = .new(_channel);
 
-
+  /// Enables verbose logging from the native side (Android `Log.i`,
+  /// iOS `NSLog`). Off by default. Useful for debugging compression
+  /// pipelines; leave disabled in release builds.
   static set showNativeLog(bool value) {
     _channel.invokeMethod('showLog', value);
   }
