@@ -58,68 +58,62 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
 
     // Method handlers
 
-    private fun compressList(call: MethodCall, result: Result) {
+    private fun compressList(call: MethodCall, result: Result) = replyCatching(result) {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
         val bytes = args[0] as ByteArray
-        val p = CompressArgs(args, rotateIndex = 4) ?: return result.postError("UNKNOWN_FORMAT", "unknown compress format")
+        val p = CompressArgs(args, rotateIndex = 4) ?: throw CompressException("BAD_ARGS", "unknown compress format")
         val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(bytes) else 0
         val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
 
-        replyCatching(result) {
-            ByteArrayOutputStream().use { out ->
-                Compressor.encodeBytes(
-                    context, p.format, bytes, out,
-                    w, h, p.quality, p.rotate + exifRotate,
-                    p.keepExif, p.inSampleSize,
-                )
-                out.toByteArray()
-            }
+        ByteArrayOutputStream().use { out ->
+            Compressor.encodeBytes(
+                context, p.format, bytes, out,
+                w, h, p.quality, p.rotate + exifRotate,
+                p.keepExif, p.inSampleSize,
+            )
+            out.toByteArray()
         }
     }
 
-    private fun compressFileToBytes(call: MethodCall, result: Result) {
+    private fun compressFileToBytes(call: MethodCall, result: Result) = replyCatching(result) {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
         val path = args[0] as String
-        val p = CompressArgs(args, rotateIndex = 4) ?: return result.postError("UNKNOWN_FORMAT", "unknown compress format")
+        val p = CompressArgs(args, rotateIndex = 4) ?: throw CompressException("BAD_ARGS", "unknown compress format")
         val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(File(path)) else 0
         val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
 
-        replyCatching(result) {
-            ByteArrayOutputStream().use { out ->
+        ByteArrayOutputStream().use { out ->
+            Compressor.encodeFile(
+                context, p.format, path, out,
+                w, h, p.quality, p.rotate + exifRotate,
+                p.keepExif, p.inSampleSize,
+            )
+            out.toByteArray()
+        }
+    }
+
+    private fun compressFileToFile(call: MethodCall, result: Result) = replyCatching(result) {
+        @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
+        val path = args[0] as String
+        val targetPath = args[4] as String
+        val p = CompressArgs(args, rotateIndex = 5) ?: throw CompressException("BAD_ARGS", "unknown compress format")
+        val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(File(path)) else 0
+        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
+
+        try {
+            File(targetPath).outputStream().use { out ->
                 Compressor.encodeFile(
                     context, p.format, path, out,
                     w, h, p.quality, p.rotate + exifRotate,
                     p.keepExif, p.inSampleSize,
                 )
-                out.toByteArray()
             }
+        } catch (e: CompressException) {
+            throw e   // BAD_IMAGE / FILE_NOT_FOUND from the source decode pass through
+        } catch (e: IOException) {
+            throw CompressException("WRITE_FAILED", "could not write $targetPath: ${e.message}")
         }
-    }
-
-    private fun compressFileToFile(call: MethodCall, result: Result) {
-        @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
-        val path = args[0] as String
-        val targetPath = args[4] as String
-        val p = CompressArgs(args, rotateIndex = 5) ?: return result.postError("UNKNOWN_FORMAT", "unknown compress format")
-        val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(File(path)) else 0
-        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
-
-        replyCatching(result) {
-            try {
-                File(targetPath).outputStream().use { out ->
-                    Compressor.encodeFile(
-                        context, p.format, path, out,
-                        w, h, p.quality, p.rotate + exifRotate,
-                        p.keepExif, p.inSampleSize,
-                    )
-                }
-            } catch (e: CompressException) {
-                throw e   // BAD_IMAGE / FILE_NOT_FOUND from the source decode pass through
-            } catch (e: IOException) {
-                throw CompressException("WRITE_FAILED", "could not write $targetPath: ${e.message}")
-            }
-            targetPath
-        }
+        targetPath
     }
 
     /// 90°/270° EXIF rotation swaps the requested output width/height.
@@ -129,13 +123,24 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     // Reply helpers (post back on the main thread)
 
     /// Runs the encode [block] and replies on the main thread, mapping failures to the same
-    /// wire error codes the iOS side uses instead of silently returning null.
+    /// wire error codes the iOS side uses instead of silently returning null. ClassCast / index /
+    /// null failures from arg parsing land here as BAD_ARGS to mirror iOS — without this catch
+    /// they'd otherwise propagate up into the executor and hang the Dart Future.
     private fun replyCatching(result: Result, block: () -> Any?) {
         try {
             result.postSuccess(block())
         } catch (e: CompressException) {
             if (showLog) e.printStackTrace()
             result.postError(e.code, e.message ?: e.code)
+        } catch (e: ClassCastException) {
+            if (showLog) e.printStackTrace()
+            result.postError("BAD_ARGS", e.message ?: "malformed channel arguments")
+        } catch (e: IndexOutOfBoundsException) {
+            if (showLog) e.printStackTrace()
+            result.postError("BAD_ARGS", e.message ?: "malformed channel arguments")
+        } catch (e: NullPointerException) {
+            if (showLog) e.printStackTrace()
+            result.postError("BAD_ARGS", e.message ?: "malformed channel arguments")
         } catch (e: OutOfMemoryError) {
             // BitmapFactory can OOM on huge inputs; surface it as a channel error rather than
             // letting it kill the executor thread and hang the Dart Future.

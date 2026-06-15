@@ -35,7 +35,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a dro
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.4.3
+  flutter_image_compress_lite: ^2.4.4
 ```
 
 ```dart
@@ -62,9 +62,9 @@ Same `FlutterImageCompress` API as the upstream — just change the import.
 - `BAD_IMAGE` — the source bytes/file could not be decoded into an image.
 - `WRITE_FAILED` — the compressed output could not be written to the target path (`compressAndGetFile` only).
 
-It can also carry these platform-specific, defensive codes (unreachable from the public Dart API):
-- **Android** — `UNKNOWN_FORMAT` (wire format index doesn't match a known `CompressFormat`) and `COMPRESS_ERROR` (any other native failure, e.g. a HEIC-encoder error).
-- **iOS** — `BAD_ARGS` (malformed channel arguments).
+It can also carry these defensive codes (unreachable from the public Dart API):
+- `BAD_ARGS` — channel arguments are missing, of the wrong type, or carry an unknown format index. Both platforms.
+- `COMPRESS_ERROR` — Android-only catch-all for any other native failure (e.g. a HeifWriter error or an `OutOfMemoryError`). iOS has no equivalent: its encoder APIs return `Optional<Data>` instead of throwing, so there's no exception soup to defend against.
 
 ## License
 
