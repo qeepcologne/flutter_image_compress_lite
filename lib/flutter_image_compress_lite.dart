@@ -108,7 +108,6 @@ class FlutterImageCompress {
     if (path == targetPath) {
       throw CompressError('Target path and source path cannot be the same.');
     }
-    _validator.checkFileNameAndFormat(targetPath, format);
     await _validator.checkSupportPlatform(format);
     final String? result = await _channel.invokeMethod(
       'compressWithFileAndGetFile',

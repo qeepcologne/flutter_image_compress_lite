@@ -1,3 +1,7 @@
+## 2.4.2
+
+- Removed the debug-mode filename-extension assert (and the `CompressFormat.suffixes` field that backed it). The check only fired in debug; release builds were never affected.
+
 ## 2.4.1
 
 - Accept `.heif` as a valid target extension for HEIC encoding alongside `.heic` — same container bytes, different naming convention. Previously tripped the debug-mode filename assert.

@@ -9,14 +9,6 @@ class FlutterImageCompressValidator {
 
   final MethodChannel channel;
 
-  void checkFileNameAndFormat(String name, CompressFormat format) {
-    final lower = name.toLowerCase();
-    assert(
-      format.suffixes.any(lower.endsWith),
-      'The ${format.name} format name must end with ${format.suffixes.join(' or ')}.',
-    );
-  }
-
   /// Validates the *encoding* target — input formats are auto-detected by
   /// the native decoder and never need a check. Plugin only registers on
   /// Android+iOS, so the remaining runtime constraints are:
