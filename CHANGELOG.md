@@ -1,3 +1,7 @@
+## 2.4.3
+
+- Docs-only — added the missing library / `CompressFormat` / `CompressError` doc comments, an `example/main.dart`, and a note on the class-level doc that `minWidth` / `minHeight` are lower bounds on the output (image is downscaled with aspect ratio preserved so both axes end up ≥ the requested minimum; never upscaled). No API or behavior change.
+
 ## 2.4.2
 
 - Removed the debug-mode filename-extension assert (and the `CompressFormat.suffixes` field that backed it). The check only fired in debug; release builds were never affected.
