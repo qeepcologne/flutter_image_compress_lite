@@ -26,6 +26,13 @@ export 'src/compress_format.dart';
 /// Compress images using native platform APIs (iOS/Android).
 /// Supports JPEG, PNG, HEIC output. WebP encoding only on Android.
 /// WebP decoding works natively on iOS 14+.
+///
+/// **About `minWidth` / `minHeight`:** these are *lower bounds* on the
+/// output dimensions, not target sizes. The image is downscaled with its
+/// aspect ratio preserved so that both axes end up ≥ the requested minimum
+/// — one axis lands exactly on its minimum, the other exceeds it. Images
+/// already smaller than the minimum on both axes are returned at their
+/// original size (never upscaled).
 class FlutterImageCompress {
   static const _channel = MethodChannel('flutter_image_compress');
 
