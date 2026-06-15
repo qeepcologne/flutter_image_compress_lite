@@ -19,7 +19,7 @@ Future<XFile?> compressFile(String sourcePath, String targetPath) {
     quality: 88,
     minWidth: 1920,
     minHeight: 1080,
-    format: CompressFormat.jpeg,
+    format: .jpeg,
     keepExif: true,
   );
 }
@@ -30,7 +30,7 @@ Future<Uint8List> compressBytesToHeic(Uint8List bytes) {
   return FlutterImageCompress.compressWithList(
     bytes,
     quality: 80,
-    format: CompressFormat.heic,
+    format: .heic,
   );
 }
 
@@ -40,7 +40,7 @@ Future<Uint8List?> compressAssetToWebp(String assetName) {
   return FlutterImageCompress.compressAssetImage(
     assetName,
     quality: 75,
-    format: CompressFormat.webp,
+    format: .webp,
   );
 }
 
