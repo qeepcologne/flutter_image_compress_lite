@@ -1,6 +1,10 @@
 ## 2.5.0
 
 - **BREAKING**: removed the `inSampleSize` parameter from `compressWithList`, `compressWithFile`, and `compressAndGetFile`. It was an Android-only `BitmapFactory.Options` knob (iOS ignored it) from the 32-bit ART / 128 MB-heap era. On modern Android (API 26+) bitmaps live in native heap and devices with 50 MP cameras have 8–12 GB RAM, so the memory savings no longer pay for the leaky abstraction or the silent quality loss when callers pick a value that under-samples small inputs. The `OutOfMemoryError` catch added in 2.4.0 still surfaces decode-time OOM as a `COMPRESS_ERROR` `PlatformException`. Callers that passed the argument need to drop it.
+- **BREAKING**: removed `CompressFormat.nativeValue`. It was a getter that just returned `index` — the wire value is the enum's built-in ordinal. Callers reading `format.nativeValue` need to switch to `format.index`.
+- **BREAKING**: `CompressError` now implements `Exception` instead of extending `Error`. The failures it carries (empty bytes, missing source file, same source-and-target path) are recoverable user-input conditions, not programming bugs. Code using `try { … } on Exception` will now catch it (previously had to use `on Error` or the bare `catch (e)`).
+- **Internal**: inlined the `FlutterImageCompressValidator` class into a private top-level function in the main library — one less file, one less indirection, no public-API change.
+- **iOS internal**: dropped the dead `@objc` on `ImageCompressPlugin.showLog`. No Obj-C consumer existed; the annotation was carried over from the 2.2.0 Obj-C→Swift rewrite. The class itself is still `@objc(ImageCompressPlugin)` because Flutter's plugin discovery requires it.
 
 ## 2.4.4
 

@@ -14,7 +14,6 @@ import 'package:flutter/services.dart';
 
 import 'src/compress_error.dart';
 import 'src/compress_format.dart';
-import 'src/validator.dart';
 
 export 'package:cross_file/cross_file.dart';
 
@@ -38,8 +37,6 @@ class FlutterImageCompress {
 
   static const _channel = MethodChannel('flutter_image_compress');
 
-  static final FlutterImageCompressValidator _validator = .new(_channel);
-
   /// Enables verbose logging from the native side (Android `Log.i`,
   /// iOS `NSLog`). Off by default. Useful for debugging compression
   /// pipelines; leave disabled in release builds.
@@ -61,7 +58,7 @@ class FlutterImageCompress {
     if (image.isEmpty) {
       throw CompressError('The image is empty.');
     }
-    await _validator.checkSupportPlatform(format);
+    await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod('compressWithList', [
       image,
       minWidth,
@@ -69,7 +66,7 @@ class FlutterImageCompress {
       quality,
       rotate,
       autoCorrectionAngle,
-      format.nativeValue,
+      format.index,
       keepExif,
     ]);
     return result;
@@ -89,7 +86,7 @@ class FlutterImageCompress {
     if (!await File(path).exists()) {
       throw CompressError('Image file does not exist in $path.');
     }
-    await _validator.checkSupportPlatform(format);
+    await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod('compressWithFile', [
       path,
       minWidth,
@@ -97,7 +94,7 @@ class FlutterImageCompress {
       quality,
       rotate,
       autoCorrectionAngle,
-      format.nativeValue,
+      format.index,
       keepExif,
     ]);
     return result;
@@ -121,7 +118,7 @@ class FlutterImageCompress {
     if (path == targetPath) {
       throw CompressError('Target path and source path cannot be the same.');
     }
-    await _validator.checkSupportPlatform(format);
+    await _checkSupportPlatform(format);
     final String? result = await _channel.invokeMethod(
       'compressWithFileAndGetFile',
       [
@@ -132,7 +129,7 @@ class FlutterImageCompress {
         targetPath,
         rotate,
         autoCorrectionAngle,
-        format.nativeValue,
+        format.index,
         keepExif,
       ],
     );
@@ -171,6 +168,23 @@ class FlutterImageCompress {
       format: format,
       keepExif: keepExif,
     );
+  }
+}
+
+/// Validates the *encoding* target — input formats are auto-detected by the
+/// native decoder and never need a check. Plugin only registers on
+/// Android+iOS, so the remaining runtime constraints are:
+///   - HEIC encoding requires Android API 28+ (Android 9)
+///   - WebP encoding is not supported on iOS (decoding works on iOS 14+)
+Future<void> _checkSupportPlatform(CompressFormat format) async {
+  if (format == .webp && Platform.isIOS) {
+    throw UnsupportedError('WebP encoding is not supported on iOS');
+  }
+  if (format == .heic && Platform.isAndroid) {
+    final int version = await FlutterImageCompress._channel.invokeMethod('getSystemVersion');
+    if (version < 28) {
+      throw UnsupportedError('HEIC encoding requires Android API 28+ (Android 9)');
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 /// Thrown by the Dart side for argument-level failures (e.g. missing source
 /// file, empty input). Native decode/encode failures arrive as a
 /// `PlatformException` instead.
-class CompressError extends Error {
+class CompressError implements Exception {
   /// Creates a [CompressError] with the given human-readable [message].
   CompressError(this.message);
 

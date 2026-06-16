@@ -13,7 +13,4 @@ enum CompressFormat {
 
   /// WebP — lossy, with alpha. Encoding is Android-only.
   webp;
-
-  /// Wire value sent over the platform channel to the native side.
-  int get nativeValue => index;
 }

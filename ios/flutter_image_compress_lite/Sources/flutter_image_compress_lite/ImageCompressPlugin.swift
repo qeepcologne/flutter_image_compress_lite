@@ -10,7 +10,7 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
     // A mutable global is a data race under strict concurrency. The honest fix is a Mutex
     // (Synchronization), but that is iOS 18+ and we still support iOS 15 — so this debug-only
     // log flag keeps the same unsynchronized behavior it had as a plain `static var`.
-    @objc public nonisolated(unsafe) static var showLog: Bool = false
+    public nonisolated(unsafe) static var showLog: Bool = false
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
