@@ -47,6 +47,8 @@ final result = await FlutterImageCompress.compressAndGetFile(
 );
 ```
 
+See [`example/main.dart`](example/main.dart) for the bytes-in / HEIC / WebP / asset variants.
+
 ## Migrating from flutter_image_compress
 
 Same `FlutterImageCompress` method names and core parameters as the upstream — only a handful of legacy knobs have been dropped. If you used the defaults, step 1 is likely the only one that touches your code:
