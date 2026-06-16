@@ -1,3 +1,7 @@
+## 2.5.0
+
+- **BREAKING**: removed the `inSampleSize` parameter from `compressWithList`, `compressWithFile`, and `compressAndGetFile`. It was an Android-only `BitmapFactory.Options` knob (iOS ignored it) from the 32-bit ART / 128 MB-heap era. On modern Android (API 26+) bitmaps live in native heap and devices with 50 MP cameras have 8–12 GB RAM, so the memory savings no longer pay for the leaky abstraction or the silent quality loss when callers pick a value that under-samples small inputs. The `OutOfMemoryError` catch added in 2.4.0 still surfaces decode-time OOM as a `COMPRESS_ERROR` `PlatformException`. Callers that passed the argument need to drop it.
+
 ## 2.4.4
 
 - **Android**: unified the wire-format error code with iOS — `UNKNOWN_FORMAT` is renamed to `BAD_ARGS`, and a malformed channel argument list (wrong type, missing element, null) now also surfaces as `BAD_ARGS` instead of crashing the executor thread and hanging the Dart Future. Real callers can't trip this — the Dart side constrains both shape and enum range — so the rename is documentation-only in practice.

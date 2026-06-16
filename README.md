@@ -35,7 +35,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a dro
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.4.4
+  flutter_image_compress_lite: ^2.5.0
 ```
 
 ```dart

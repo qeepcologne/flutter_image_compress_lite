@@ -50,9 +50,8 @@ internal object Compressor {
         quality: Int,
         rotate: Int,
         keepExif: Boolean,
-        inSampleSize: Int,
     ) {
-        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions(format, inSampleSize))
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions(format))
             ?: throw CompressException("BAD_IMAGE", "could not decode image bytes")
         val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(bytes) }
@@ -68,10 +67,9 @@ internal object Compressor {
         quality: Int,
         rotate: Int,
         keepExif: Boolean,
-        inSampleSize: Int,
     ) {
         if (!File(path).exists()) throw CompressException("FILE_NOT_FOUND", "could not read $path")
-        val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format, inSampleSize))
+        val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format))
             ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
         val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
@@ -143,9 +141,8 @@ internal object Compressor {
         }
     }
 
-    private fun decodeOptions(format: CompressFormat, inSampleSize: Int): BitmapFactory.Options {
+    private fun decodeOptions(format: CompressFormat): BitmapFactory.Options {
         val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = false
         // Only JPEG is opaque; PNG/WebP/HEIC may carry alpha and would silently
         // lose transparency under RGB_565.
         options.inPreferredConfig = if (format == CompressFormat.JPEG) {
@@ -153,7 +150,6 @@ internal object Compressor {
         } else {
             Bitmap.Config.ARGB_8888
         }
-        options.inSampleSize = inSampleSize
         return options
     }
 }

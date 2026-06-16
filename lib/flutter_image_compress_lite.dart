@@ -54,7 +54,6 @@ class FlutterImageCompress {
     int minHeight = _Defaults.minHeight,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
-    int inSampleSize = _Defaults.inSampleSize,
     bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
@@ -72,7 +71,6 @@ class FlutterImageCompress {
       autoCorrectionAngle,
       format.nativeValue,
       keepExif,
-      inSampleSize,
     ]);
     return result;
   }
@@ -82,7 +80,6 @@ class FlutterImageCompress {
     String path, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
-    int inSampleSize = _Defaults.inSampleSize,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
     bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
@@ -102,7 +99,6 @@ class FlutterImageCompress {
       autoCorrectionAngle,
       format.nativeValue,
       keepExif,
-      inSampleSize,
     ]);
     return result;
   }
@@ -113,7 +109,6 @@ class FlutterImageCompress {
     String targetPath, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
-    int inSampleSize = _Defaults.inSampleSize,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
     bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
@@ -139,7 +134,6 @@ class FlutterImageCompress {
         autoCorrectionAngle,
         format.nativeValue,
         keepExif,
-        inSampleSize,
       ],
     );
     if (result == null) {
@@ -185,7 +179,6 @@ class _Defaults {
   static const int minHeight = 1080;
   static const int quality = 95;
   static const int rotate = 0;
-  static const int inSampleSize = 1;
   static const bool autoCorrectionAngle = true;
   static const CompressFormat format = .jpeg;
   static const bool keepExif = false;

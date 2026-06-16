@@ -69,7 +69,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
             Compressor.encodeBytes(
                 context, p.format, bytes, out,
                 w, h, p.quality, p.rotate + exifRotate,
-                p.keepExif, p.inSampleSize,
+                p.keepExif,
             )
             out.toByteArray()
         }
@@ -86,7 +86,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
             Compressor.encodeFile(
                 context, p.format, path, out,
                 w, h, p.quality, p.rotate + exifRotate,
-                p.keepExif, p.inSampleSize,
+                p.keepExif,
             )
             out.toByteArray()
         }
@@ -105,7 +105,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
                 Compressor.encodeFile(
                     context, p.format, path, out,
                     w, h, p.quality, p.rotate + exifRotate,
-                    p.keepExif, p.inSampleSize,
+                    p.keepExif,
                 )
             }
         } catch (e: CompressException) {
@@ -168,10 +168,10 @@ internal fun log(any: Any?) {
 }
 
 /// The shared channel arguments, parsed by position. All three calls share the same layout
-/// from [rotateIndex] onward (rotate, autoCorrectionAngle, format, keepExif, inSampleSize);
-/// only compressWithFileAndGetFile shifts it by one to insert `targetPath` at 4.
-/// Returns null when the format index doesn't map to a known [CompressFormat]. Mirrors the
-/// iOS `CompressParams(args:rotateIndex:)` so the two platforms parse the wire format the same way.
+/// from [rotateIndex] onward (rotate, autoCorrectionAngle, format, keepExif); only
+/// compressWithFileAndGetFile shifts it by one to insert `targetPath` at 4. Returns null
+/// when the format index doesn't map to a known [CompressFormat]. Mirrors the iOS
+/// `CompressParams(args:rotateIndex:)` so the two platforms parse the wire format the same way.
 private class CompressArgs private constructor(
     val format: CompressFormat,
     val minWidth: Int,
@@ -180,7 +180,6 @@ private class CompressArgs private constructor(
     val rotate: Int,
     val autoCorrectionAngle: Boolean,
     val keepExif: Boolean,
-    val inSampleSize: Int,
 ) {
     companion object {
         operator fun invoke(args: List<Any>, rotateIndex: Int): CompressArgs? {
@@ -193,7 +192,6 @@ private class CompressArgs private constructor(
                 rotate = args[rotateIndex] as Int,
                 autoCorrectionAngle = args[rotateIndex + 1] as Boolean,
                 keepExif = args[rotateIndex + 3] as Boolean,
-                inSampleSize = args[rotateIndex + 4] as Int,
             )
         }
     }
