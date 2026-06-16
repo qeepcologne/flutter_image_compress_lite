@@ -47,16 +47,14 @@ final result = await FlutterImageCompress.compressAndGetFile(
 );
 ```
 
-Same `FlutterImageCompress` method names and core parameters as the upstream — only a handful of legacy knobs have been dropped (see migration steps below).
-
 ## Migrating from flutter_image_compress
+
+Same `FlutterImageCompress` method names and core parameters as the upstream — only a handful of legacy knobs have been dropped. If you used the defaults, step 1 is likely the only one that touches your code:
 
 1. Swap the package name in `pubspec.yaml` and every `import` from `flutter_image_compress` to `flutter_image_compress_lite`.
 2. Drop the `numberOfRetries` parameter from any call site. Decode-time `OutOfMemoryError` now surfaces as a `COMPRESS_ERROR` `PlatformException` instead of being retried.
 3. Drop the `inSampleSize` parameter from any call site.
 4. If you catch on `Error` to handle `CompressError`, switch to `Exception` (or the bare `catch (e)`) — `CompressError implements Exception` here.
-
-If you only ever called `compressWithList` / `compressWithFile` / `compressAndGetFile` / `compressAssetImage` with the defaults, step 1 is likely the only one that touches your code.
 
 ## Errors
 
