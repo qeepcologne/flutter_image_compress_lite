@@ -1,6 +1,6 @@
 # flutter_image_compress_lite
 
-Standalone image-compression plugin for Flutter on **Android and iOS** — a drop-in replacement for [`flutter_image_compress`](https://github.com/fluttercandies/flutter_image_compress), collapsed into a single package (no federated architecture, hence no macOS/Web/OpenHarmony).
+Standalone image-compression plugin for Flutter on **Android and iOS** — a replacement for [`flutter_image_compress`](https://github.com/fluttercandies/flutter_image_compress), collapsed into a single package (no federated architecture, hence no macOS/Web/OpenHarmony).
 
 **Purpose:** minimal and legacy-free, for **current toolchains only** — minimal native dependencies, **no CocoaPods**, and built against the latest AGP, Gradle, Flutter, and Xcode rather than older ones. If you need older toolchains or CocoaPods, use the upstream package instead.
 
@@ -47,7 +47,16 @@ final result = await FlutterImageCompress.compressAndGetFile(
 );
 ```
 
-Same `FlutterImageCompress` API as the upstream — just change the import.
+Same `FlutterImageCompress` method names and core parameters as the upstream — only a handful of legacy knobs have been dropped (see migration steps below).
+
+## Migrating from flutter_image_compress
+
+1. Swap the package name in `pubspec.yaml` and every `import` from `flutter_image_compress` to `flutter_image_compress_lite`.
+2. Drop the `numberOfRetries` parameter from any call site. Decode-time `OutOfMemoryError` now surfaces as a `COMPRESS_ERROR` `PlatformException` instead of being retried.
+3. Drop the `inSampleSize` parameter from any call site.
+4. If you catch on `Error` to handle `CompressError`, switch to `Exception` (or the bare `catch (e)`); since 2.5.0 `CompressError implements Exception`.
+
+If you only ever called `compressWithList` / `compressWithFile` / `compressAndGetFile` / `compressAssetImage` with the defaults, step 1 is likely the only one that touches your code.
 
 ## Errors
 
