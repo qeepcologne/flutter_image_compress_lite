@@ -15,7 +15,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | JPEG / PNG | yes | yes |
 | HEIC / HEIF (iOS) | yes | yes |
 | HEIC / HEIF (Android) | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
-| WebP (iOS) | encode + decode (SDWebImage) | decode only (native, iOS 14+) |
+| WebP (iOS) | encode + decode (SDWebImage) | decode only (native) |
 | WebP (Android) | yes (native) | yes (native) |
 | **Android** | | |
 | Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
@@ -61,7 +61,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 ## Errors
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
-- WebP encoding on iOS (decoding works on iOS 14+)
+- WebP encoding on iOS (decoding works)
 - HEIC encoding on Android < API 28 (Android 9)
 
 `CompressError` is thrown for invalid input caught Dart-side (empty image bytes, missing file).

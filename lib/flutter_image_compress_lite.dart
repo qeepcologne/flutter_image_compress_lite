@@ -23,8 +23,8 @@ export 'src/compress_format.dart';
 /// Image Compress plugin.
 ///
 /// Compress images using native platform APIs (iOS/Android).
-/// Supports JPEG, PNG, HEIC output. WebP encoding only on Android.
-/// WebP decoding works natively on iOS 14+.
+/// Supports JPEG, PNG, HEIC output. WebP encoding only on Android;
+/// WebP decoding works on both platforms.
 ///
 /// **About `minWidth` / `minHeight`:** these are *lower bounds* on the
 /// output dimensions, not target sizes. The image is downscaled with its
@@ -175,7 +175,7 @@ class FlutterImageCompress {
 /// native decoder and never need a check. Plugin only registers on
 /// Android+iOS, so the remaining runtime constraints are:
 ///   - HEIC encoding requires Android API 28+ (Android 9)
-///   - WebP encoding is not supported on iOS (decoding works on iOS 14+)
+///   - WebP encoding is not supported on iOS (decoding works)
 Future<void> _checkSupportPlatform(CompressFormat format) async {
   if (format == .webp && Platform.isIOS) {
     throw UnsupportedError('WebP encoding is not supported on iOS');
