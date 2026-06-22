@@ -1,3 +1,8 @@
+## 2.5.1
+
+- **iOS**: fix compression producing output 4–9× larger than the requested `minWidth`/`minHeight` (and JPEG encoding correspondingly slower) on Retina devices. The resize and rotate steps used `UIGraphicsImageRenderer(size:)` without a format, which defaulted to the main screen's UIKit scale (2× / 3×) — so the renderer's actual pixel bitmap was `target × screenScale`. Now forces `format.scale = 1`. Reported in #4.
+- **Android**: bumped the Gradle wrapper 9.5.1 → 9.6.0.
+
 ## 2.5.0
 
 - **BREAKING**: removed the `inSampleSize` parameter from `compressWithList`, `compressWithFile`, and `compressAndGetFile`. It was an Android-only `BitmapFactory.Options` knob (iOS ignored it) from the 32-bit ART / 128 MB-heap era. On modern Android (API 26+) bitmaps live in native heap and devices with 50 MP cameras have 8–12 GB RAM, so the memory savings no longer pay for the leaky abstraction or the silent quality loss when callers pick a value that under-samples small inputs. The `OutOfMemoryError` catch added in 2.4.0 still surfaces decode-time OOM as a `COMPRESS_ERROR` `PlatformException`. Callers that passed the argument need to drop it.
