@@ -1,6 +1,7 @@
 ## 2.5.2
 
 - **iOS**: encoder-returns-nil edge cases (missing `cgImage`, HEIF encoder failure) now surface as `COMPRESS_ERROR` `PlatformException` instead of resolving the Dart Future to nil — keeps the non-nullable `Future<Uint8List>` return type of `compressWithList` honest. Unreachable in practice for normal inputs.
+- **Internal**: swapped EXIF string literals for framework constants in both EXIF keepers (Kotlin `ExifInterface.TAG_*`, Swift `CGImagePropertyOrientation.up.rawValue`) and dropped the now-unreachable `Outcome.null` enum case on iOS. No observable behavior change.
 
 ## 2.5.1
 

@@ -22,7 +22,7 @@ enum ExifKeeper {
         }
         var mutable = props
         // The image was already rotated during compression, so reset orientation to "up".
-        mutable[kCGImagePropertyOrientation] = 1
+        mutable[kCGImagePropertyOrientation] = CGImagePropertyOrientation.up.rawValue
         return mutable
     }
 
