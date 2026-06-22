@@ -1,3 +1,7 @@
+## 2.5.3
+
+- **Android**: fix 2.5.2 build break — `ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY` was used by the EXIF keeper, but that constant lives only on `androidx.exifinterface.media.ExifInterface`; the framework `android.media.ExifInterface` (which we use since 2.2.0) only exposes the deprecated `TAG_ISO_SPEED_RATINGS`. Reverted to that with `@Suppress("DEPRECATION")`. Same tag-id (34855), same wire bytes.
+
 ## 2.5.2
 
 - **iOS**: encoder-returns-nil edge cases (missing `cgImage`, HEIF encoder failure) now surface as `COMPRESS_ERROR` `PlatformException` instead of resolving the Dart Future to nil — keeps the non-nullable `Future<Uint8List>` return type of `compressWithList` honest. Unreachable in practice for normal inputs.

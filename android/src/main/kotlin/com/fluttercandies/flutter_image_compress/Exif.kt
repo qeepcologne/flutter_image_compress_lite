@@ -60,10 +60,14 @@ internal class ExifKeeper {
     }
 
     private companion object {
+        // TAG_PHOTOGRAPHIC_SENSITIVITY is the modern EXIF 2.3 name but lives only on AndroidX
+        // ExifInterface; the framework class still exposes the deprecated TAG_ISO_SPEED_RATINGS,
+        // which is what we have to use. Same tag-id (34855), same wire bytes.
+        @Suppress("DEPRECATION")
         private val PRESERVED_ATTRIBUTES = listOf(
             ExifInterface.TAG_F_NUMBER,
             ExifInterface.TAG_EXPOSURE_TIME,
-            ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY,
+            ExifInterface.TAG_ISO_SPEED_RATINGS,
             ExifInterface.TAG_GPS_ALTITUDE,
             ExifInterface.TAG_GPS_ALTITUDE_REF,
             ExifInterface.TAG_FOCAL_LENGTH,
