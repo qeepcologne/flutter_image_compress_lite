@@ -1,3 +1,7 @@
+## 2.5.2
+
+- **iOS**: encoder-returns-nil edge cases (missing `cgImage`, HEIF encoder failure) now surface as `COMPRESS_ERROR` `PlatformException` instead of resolving the Dart Future to nil — keeps the non-nullable `Future<Uint8List>` return type of `compressWithList` honest. Unreachable in practice for normal inputs.
+
 ## 2.5.1
 
 - **iOS**: fix compression producing output 4–9× larger than the requested `minWidth`/`minHeight` (and JPEG encoding correspondingly slower) on Retina devices. The resize and rotate steps used `UIGraphicsImageRenderer(size:)` without a format, which defaulted to the main screen's UIKit scale (2× / 3×) — so the renderer's actual pixel bitmap was `target × screenScale`. Now forces `format.scale = 1`. Reported in #4.

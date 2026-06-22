@@ -46,8 +46,6 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
                 deliver(FlutterStandardTypedData(bytes: data))
             case .path(let path):
                 deliver(path)
-            case .null:
-                deliver(nil)
             case .failure(let code, let message):
                 deliver(FlutterError(code: code, message: message, details: nil))
             }
@@ -78,7 +76,10 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
             return .failure(code: "BAD_IMAGE", message: "could not decode image")
         }
         guard let compressed = Compressor.encode(image: image, params: request.params) else {
-            return .null
+            // Compressor.encode returns nil only on edge cases (missing cgImage, encoder
+            // failure) — surface them as COMPRESS_ERROR so the non-nullable Dart return type
+            // of compressWithList holds, instead of silently delivering nil to a Future<Uint8List>.
+            return .failure(code: "COMPRESS_ERROR", message: "encoder returned no data")
         }
         let output = request.params.keepExif ? applyExif(compressed) : compressed
 
@@ -182,6 +183,5 @@ struct Request: Sendable {
 enum Outcome: Sendable {
     case bytes(Data)
     case path(String)
-    case null
     case failure(code: String, message: String?)
 }

@@ -36,7 +36,7 @@ enum Compressor {
     private static func heifData(from image: UIImage, quality: CGFloat) -> Data? {
         guard let cgImage = image.cgImage else { return nil }
         let ciImage = CIImage(cgImage: cgImage)
-        let context = CIContext(options: nil)
+        let context = CIContext()
         let options: [CIImageRepresentationOption: Any] = [
             CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String): quality
         ]
