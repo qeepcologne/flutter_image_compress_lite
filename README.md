@@ -73,7 +73,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 
 It can also carry these defensive codes (unreachable from the public Dart API):
 - `BAD_ARGS` — channel arguments are missing, of the wrong type, or carry an unknown format index. Both platforms.
-- `COMPRESS_ERROR` — Android-only catch-all for any other native failure (e.g. a HeifWriter error or an `OutOfMemoryError`).
+- `COMPRESS_ERROR` — catch-all native failure (Android: any uncaught exception, e.g. a HeifWriter error or an `OutOfMemoryError`; iOS: encoder-returns-nil edge case).
 
 ## License
 
