@@ -2,7 +2,7 @@
 
 Standalone image-compression plugin for Flutter on **Android and iOS** — a replacement for [`flutter_image_compress`](https://github.com/fluttercandies/flutter_image_compress), collapsed into a single package (no federated architecture, hence no macOS/Web/OpenHarmony).
 
-**Purpose:** minimal and legacy-free, for **current toolchains only** — minimal native dependencies, **no CocoaPods**, and built against the latest AGP, Gradle, Flutter, and Xcode rather than older ones. If you need older toolchains or CocoaPods, use the upstream package instead.
+**Purpose:** minimal and legacy-free, for **current toolchains only** — minimal native dependencies, **no CocoaPods**, and built against the latest Flutter, AGP, Gradle, Android SDK, and Xcode rather than older ones. If you need older toolchains or CocoaPods, use the upstream package instead.
 
 ## What changed vs upstream
 
