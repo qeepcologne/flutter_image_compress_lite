@@ -1,3 +1,7 @@
+## 2.6.0
+
+- **BREAKING (environment)**: bumped the minimum Flutter to `3.44.0` and Dart to `3.12.0`. The plugin's `android/build.gradle.kts` applies only `com.android.library` (no `kotlin-android`), which depends on **AGP 9's built-in Kotlin** support — AGP 9 is the default in Flutter 3.44+, not earlier. The previous `>=3.41.0` floor was only achievable when the host manually opted into AGP 9, and there was no warning when it wasn't. The new floor matches what the build actually requires. No code change. Follows the [Flutter built-in Kotlin migration guide for plugin authors](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors).
+
 ## 2.5.3
 
 - **Android**: fix 2.5.2 build break — `ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY` was used by the EXIF keeper, but that constant lives only on `androidx.exifinterface.media.ExifInterface`; the framework `android.media.ExifInterface` (which we use since 2.2.0) only exposes the deprecated `TAG_ISO_SPEED_RATINGS`. Reverted to that with `@Suppress("DEPRECATION")`. Same tag-id (34855), same wire bytes.

@@ -10,7 +10,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 |---|---|---|
 | Architecture | federated (3 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
-| Dart / Flutter | >=2.12 / >=2.0 | ^3.11 / >=3.41 |
+| Dart / Flutter | >=2.12 / >=2.0 | ^3.12 / >=3.44 |
 | **Image formats** | | |
 | JPEG / PNG | yes | yes |
 | HEIC / HEIF (iOS) | yes | yes |
@@ -35,7 +35,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.5.3
+  flutter_image_compress_lite: ^2.6.0
 ```
 
 ```dart

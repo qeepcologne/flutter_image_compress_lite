@@ -1,11 +1,11 @@
 name: flutter_image_compress_lite
 description: Minimal, legacy-free image compression for Flutter (Android + iOS) — no CocoaPods, SPM-only, minimal native deps. Replacement for flutter_image_compress.
 repository: https://github.com/qeepcologne/flutter_image_compress_lite
-version: 2.5.3
+version: 2.6.0
 
 environment:
-  sdk: ^3.11.0
-  flutter: '>=3.41.0'
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
 
 dependencies:
   flutter:
