@@ -66,14 +66,12 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 
 `CompressError` is thrown for invalid input caught Dart-side (empty image bytes, missing file).
 
-`PlatformException` is thrown by the native side when something goes wrong below the channel. Both platforms surface the same core codes:
+`PlatformException` is thrown by the native side when something goes wrong below the channel:
 - `FILE_NOT_FOUND` — the source file could not be read.
 - `BAD_IMAGE` — the source bytes/file could not be decoded into an image.
 - `WRITE_FAILED` — the compressed output could not be written to the target path (`compressAndGetFile` only).
-
-It can also carry these defensive codes (unreachable from the public Dart API):
-- `BAD_ARGS` — channel arguments are missing, of the wrong type, or carry an unknown format index. Both platforms.
-- `COMPRESS_ERROR` — catch-all native failure (Android: any uncaught exception, e.g. a HeifWriter error or an `OutOfMemoryError`; iOS: encoder-returns-nil edge case).
+- `COMPRESS_ERROR` — catch-all native failure. On Android: any uncaught exception during encode, e.g. a `HeifWriter` failure or an `OutOfMemoryError` on a very large input. On iOS: encoder-returns-nil edge case, unreachable in practice.
+- `BAD_ARGS` — channel arguments are missing, of the wrong type, or carry an unknown format index; unreachable from the public Dart API.
 
 ## License
 
