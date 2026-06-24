@@ -22,7 +22,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | keepExif | androidx.exifinterface | **native android.media.ExifInterface** |
 | Language | Java + Kotlin | Kotlin |
 | minSdk | 21 | 24 |
-| AGP | 8+ (Groovy) | 9+ only (Kotlin DSL) |
+| AGP | 7.4+ (Groovy) | 9+ only (Kotlin) |
 | **iOS** | | |
 | Native deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
 | keepExif | Mantle / SYMetadata | **native ImageIO** |
