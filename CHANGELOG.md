@@ -1,3 +1,7 @@
+## 2.5.4+1
+
+- README: added Android SDK to the list of "latest toolchains" the package is built against, and reordered the list to mirror the comparison table (Flutter → Android trio → Xcode).
+
 ## 2.5.4
 
 - **Environment**: declared minima moved to Flutter `3.44.0` and Dart `3.12.0`. The plugin's `android/build.gradle.kts` applies only `com.android.library` (no `kotlin-android`), which already required AGP 9's built-in Kotlin support — AGP 9 is the default in Flutter 3.44+, not earlier. The previous `>=3.41.0` floor was honored by pub.dev but not actually buildable without manual AGP 9 opt-in on the host. The new floor matches what the build always required. Follows the [Flutter built-in Kotlin migration guide for plugin authors](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors).
