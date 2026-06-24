@@ -1,4 +1,10 @@
 import UIKit
+import os
+
+private let log = Logger(
+    subsystem: "com.qeepcologne.flutter_image_compress_lite",
+    category: "scale"
+)
 
 // UIGraphicsImageRendererFormat.default() picks up the main screen's scale (2× or 3× on real
 // devices), so a renderer built from it produces a `size × scale` PIXEL bitmap even though
@@ -27,9 +33,9 @@ extension UIImage {
         )
 
         if ImageCompressPlugin.showLog {
-            NSLog("scale = %.2f", Double(scaleRatio))
-            NSLog("dst width = %.2f", Double(target.width))
-            NSLog("dst height = %.2f", Double(target.height))
+            log.info("scale = \(scaleRatio)")
+            log.info("dst width = \(target.width)")
+            log.info("dst height = \(target.height)")
         }
 
         let renderer = UIGraphicsImageRenderer(size: target, format: pixelExactFormat())
@@ -40,7 +46,7 @@ extension UIImage {
 
     func rotated(byDegrees degrees: CGFloat) -> UIImage {
         if ImageCompressPlugin.showLog {
-            NSLog("will rotate %.2f", Double(degrees))
+            log.info("will rotate \(degrees)")
         }
         let radians = degrees * .pi / 180
         let rotatedSize = CGRect(origin: .zero, size: size)

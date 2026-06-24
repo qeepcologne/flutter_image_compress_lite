@@ -1,6 +1,7 @@
 ## 2.6.0
 
 - **BREAKING (environment)**: bumped the minimum Flutter to `3.44.0` and Dart to `3.12.0`. The plugin's `android/build.gradle.kts` applies only `com.android.library` (no `kotlin-android`), which depends on **AGP 9's built-in Kotlin** support — AGP 9 is the default in Flutter 3.44+, not earlier. The previous `>=3.41.0` floor was only achievable when the host manually opted into AGP 9, and there was no warning when it wasn't. The new floor matches what the build actually requires. No code change. Follows the [Flutter built-in Kotlin migration guide for plugin authors](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors).
+- **iOS internal**: replaced `NSLog` with the modern `os.Logger` API (subsystem `com.qeepcologne.flutter_image_compress_lite`, categories `compress` and `scale`). When `showNativeLog` is on, output is now filterable by subsystem/category in Console.app and goes through the ring-buffered unified logging system. No observable behavior change.
 
 ## 2.5.3
 

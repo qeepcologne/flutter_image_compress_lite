@@ -1,14 +1,20 @@
 import UIKit
 import CoreImage
+import os
+
+private let log = Logger(
+    subsystem: "com.qeepcologne.flutter_image_compress_lite",
+    category: "compress"
+)
 
 enum Compressor {
     static func encode(image: UIImage, params: CompressParams) -> Data? {
         if ImageCompressPlugin.showLog {
-            NSLog("width = %.0f", Double(image.size.width))
-            NSLog("height = %.0f", Double(image.size.height))
-            NSLog("minWidth = %d", params.minWidth)
-            NSLog("minHeight = %d", params.minHeight)
-            NSLog("format = %d", params.format.rawValue)
+            log.info("width = \(image.size.width)")
+            log.info("height = \(image.size.height)")
+            log.info("minWidth = \(params.minWidth)")
+            log.info("minHeight = \(params.minHeight)")
+            log.info("format = \(params.format.rawValue)")
         }
         var img = image.scaled(toMinWidth: CGFloat(params.minWidth),
                                minHeight: CGFloat(params.minHeight))
