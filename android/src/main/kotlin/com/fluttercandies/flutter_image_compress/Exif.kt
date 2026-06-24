@@ -54,7 +54,7 @@ internal class ExifKeeper {
                 file.inputStream().use { it.copyTo(dest) }
             }
         } catch (ex: Exception) {
-            Log.e("flutter_image_compress", "exif copy failed: $ex")
+            Log.e(LOG_TAG, "exif copy failed", ex)
             encoded
         }
     }
