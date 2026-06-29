@@ -1,3 +1,8 @@
+## 2.5.5
+
+- **iOS**: Xcode floor raised to **26.4.1** (Swift 6.3 toolchain). `Package.swift` declares `swift-tools-version: 6.3`; no code change.
+- **Build**: Gradle wrapper 9.6.0 → 9.6.1.
+
 ## 2.5.4+1
 
 - README: added Android SDK to the list of "latest toolchains" the package is built against, and reordered the list to mirror the comparison table (Flutter → Android trio → Xcode).

@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.3
 import PackageDescription
 
 let package = Package(
@@ -15,8 +15,7 @@ let package = Package(
             name: "flutter_image_compress_lite",
             dependencies: [],
             swiftSettings: [
-                // Approachable concurrency: async funcs run on the caller's executor by default,
-                // and `@concurrent` is the explicit opt-in to the global executor. Requires Swift 6.2.
+                // Async funcs run on caller's executor unless marked @concurrent.
                 .enableUpcomingFeature("NonisolatedNonsendingByDefault")
             ]
         )

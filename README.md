@@ -29,7 +29,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | Language | Objective-C | Swift 6 |
 | Packaging | CocoaPods | **SPM only** |
 | Deployment target | 9.0 | 15.0 |
-| Xcode (to build) | any (no Swift floor) | 26+ (Swift 6.2 toolchain) |
+| Xcode (to build) | any (no Swift floor) | 26.4.1+ (Swift 6.3 toolchain) |
 
 ## Usage
 
