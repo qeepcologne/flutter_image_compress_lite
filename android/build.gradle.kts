@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.fluttercandies.flutter_image_compress"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
