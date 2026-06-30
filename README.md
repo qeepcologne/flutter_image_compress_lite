@@ -35,7 +35,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.5.4
+  flutter_image_compress_lite: ^2.6.0
 ```
 
 ```dart
@@ -57,6 +57,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 2. Drop the `numberOfRetries` parameter from any call site. Decode-time `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException`.
 3. Drop the `inSampleSize` parameter from any call site.
 4. If you catch on `Error` to handle `CompressError`, switch to `Exception` (or the bare `catch (e)`) — `CompressError implements Exception` here.
+5. Drop null-checks on the return values of `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` — these throw on failure here (and treat empty input as a failure) rather than returning `null`.
 
 ## Errors
 
@@ -64,7 +65,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 - WebP encoding on iOS (decoding works)
 - HEIC encoding on Android < API 28 (Android 9)
 
-`CompressError` is thrown for invalid input caught Dart-side (empty image bytes, missing file).
+`CompressError` is thrown for invalid input caught Dart-side (empty image bytes, empty asset, missing file).
 
 `PlatformException` is thrown by the native side when something goes wrong below the channel:
 - `FILE_NOT_FOUND` — the source file could not be read.

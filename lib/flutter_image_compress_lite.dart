@@ -38,7 +38,7 @@ class FlutterImageCompress {
   static const _channel = MethodChannel('flutter_image_compress');
 
   /// Enables verbose logging from the native side (Android `Log.i`,
-  /// iOS `NSLog`). Off by default. Useful for debugging compression
+  /// iOS `os.Logger`). Off by default. Useful for debugging compression
   /// pipelines; leave disabled in release builds.
   static set showNativeLog(bool value) {
     _channel.invokeMethod('showLog', value);
@@ -73,7 +73,7 @@ class FlutterImageCompress {
   }
 
   /// Compress file of [path] to [Uint8List].
-  static Future<typed_data.Uint8List?> compressWithFile(
+  static Future<typed_data.Uint8List> compressWithFile(
     String path, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
@@ -84,24 +84,27 @@ class FlutterImageCompress {
     bool keepExif = _Defaults.keepExif,
   }) async {
     if (!await File(path).exists()) {
-      throw CompressError('Image file does not exist in $path.');
+      throw CompressError('Image file does not exist at $path.');
     }
     await _checkSupportPlatform(format);
-    final result = await _channel.invokeMethod('compressWithFile', [
-      path,
-      minWidth,
-      minHeight,
-      quality,
-      rotate,
-      autoCorrectionAngle,
-      format.index,
-      keepExif,
-    ]);
-    return result;
+    final result = await _channel.invokeMethod<typed_data.Uint8List>(
+      'compressWithFile',
+      [
+        path,
+        minWidth,
+        minHeight,
+        quality,
+        rotate,
+        autoCorrectionAngle,
+        format.index,
+        keepExif,
+      ],
+    );
+    return result!;
   }
 
   /// Compress file at [path] and write to [targetPath].
-  static Future<XFile?> compressAndGetFile(
+  static Future<XFile> compressAndGetFile(
     String path,
     String targetPath, {
     int minWidth = _Defaults.minWidth,
@@ -113,13 +116,13 @@ class FlutterImageCompress {
     bool keepExif = _Defaults.keepExif,
   }) async {
     if (!await File(path).exists()) {
-      throw CompressError('Image file does not exist in $path.');
+      throw CompressError('Image file does not exist at $path.');
     }
     if (path == targetPath) {
       throw CompressError('Target path and source path cannot be the same.');
     }
     await _checkSupportPlatform(format);
-    final String? result = await _channel.invokeMethod(
+    final result = await _channel.invokeMethod<String>(
       'compressWithFileAndGetFile',
       [
         path,
@@ -133,14 +136,11 @@ class FlutterImageCompress {
         keepExif,
       ],
     );
-    if (result == null) {
-      return null;
-    }
-    return XFile(result);
+    return XFile(result!);
   }
 
   /// Compress image from asset.
-  static Future<typed_data.Uint8List?> compressAssetImage(
+  static Future<typed_data.Uint8List> compressAssetImage(
     String assetName, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
@@ -156,7 +156,7 @@ class FlutterImageCompress {
     final ByteData data = await key.bundle.load(key.name);
     final uint8List = data.buffer.asUint8List();
     if (uint8List.isEmpty) {
-      return null;
+      throw CompressError('The asset $assetName is empty.');
     }
     return compressWithList(
       uint8List,

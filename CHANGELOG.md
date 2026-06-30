@@ -1,3 +1,8 @@
+## 2.6.0
+
+- **Breaking**: `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` return non-nullable types (`Uint8List`, `XFile`, `Uint8List`). The native sides have always thrown `PlatformException` on failure since 2.5.2 and never delivered `null` on the happy path — the `?` was leftover from the pre-2.5.2 contract. Source-only break for callers using `?? fallback` or `if (result != null)`.
+- **Breaking**: `compressAssetImage` now throws `CompressError` for an empty asset, to match the empty-bytes handling in `compressWithList` (was: returned `null`).
+
 ## 2.5.5
 
 - **iOS**: Xcode floor raised to **26.4.1** (Swift 6.3 toolchain). `Package.swift` declares `swift-tools-version: 6.3`; no code change.

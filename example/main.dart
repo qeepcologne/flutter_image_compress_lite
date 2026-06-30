@@ -11,8 +11,8 @@ import 'dart:typed_data';
 import 'package:flutter_image_compress_lite/flutter_image_compress_lite.dart';
 
 /// Compresses [sourcePath] into [targetPath] as JPEG and returns the
-/// resulting file, or `null` if the platform returned no path.
-Future<XFile?> compressFile(String sourcePath, String targetPath) {
+/// resulting file.
+Future<XFile> compressFile(String sourcePath, String targetPath) {
   return FlutterImageCompress.compressAndGetFile(
     sourcePath,
     targetPath,
@@ -36,7 +36,7 @@ Future<Uint8List> compressBytesToHeic(Uint8List bytes) {
 
 /// Loads a bundled asset and returns it compressed as WebP. WebP encoding
 /// is Android-only — on iOS this throws [UnsupportedError].
-Future<Uint8List?> compressAssetToWebp(String assetName) {
+Future<Uint8List> compressAssetToWebp(String assetName) {
   return FlutterImageCompress.compressAssetImage(
     assetName,
     quality: 75,
@@ -47,9 +47,7 @@ Future<Uint8List?> compressAssetToWebp(String assetName) {
 void main() async {
   final tmp = Directory.systemTemp.path;
   final out = await compressFile('$tmp/input.jpg', '$tmp/output.jpg');
-  if (out != null) {
-    final size = await File(out.path).length();
-    // ignore: avoid_print
-    print('Compressed to ${out.path} (${size ~/ 1024} KiB)');
-  }
+  final size = await File(out.path).length();
+  // ignore: avoid_print
+  print('Compressed to ${out.path} (${size ~/ 1024} KiB)');
 }
