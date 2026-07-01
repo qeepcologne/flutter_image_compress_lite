@@ -129,26 +129,20 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
     private fun replyCatching(result: Result, block: () -> Any?) {
         try {
             result.postSuccess(block())
-        } catch (e: CompressException) {
+        } catch (e: Exception) {
+            val (code, message) = when (e) {
+                is CompressException -> e.code to (e.message ?: e.code)
+                is ClassCastException, is IndexOutOfBoundsException, is NullPointerException ->
+                    "BAD_ARGS" to (e.message ?: "malformed channel arguments")
+                else -> "COMPRESS_ERROR" to (e.message ?: e.toString())
+            }
             if (showLog) Log.w(LOG_TAG, e.message ?: e.javaClass.simpleName, e)
-            result.postError(e.code, e.message ?: e.code)
-        } catch (e: ClassCastException) {
-            if (showLog) Log.w(LOG_TAG, e.message ?: e.javaClass.simpleName, e)
-            result.postError("BAD_ARGS", e.message ?: "malformed channel arguments")
-        } catch (e: IndexOutOfBoundsException) {
-            if (showLog) Log.w(LOG_TAG, e.message ?: e.javaClass.simpleName, e)
-            result.postError("BAD_ARGS", e.message ?: "malformed channel arguments")
-        } catch (e: NullPointerException) {
-            if (showLog) Log.w(LOG_TAG, e.message ?: e.javaClass.simpleName, e)
-            result.postError("BAD_ARGS", e.message ?: "malformed channel arguments")
+            result.postError(code, message)
         } catch (e: OutOfMemoryError) {
             // BitmapFactory can OOM on huge inputs; surface it as a channel error rather than
             // letting it kill the executor thread and hang the Dart Future.
             if (showLog) Log.w(LOG_TAG, e.message ?: e.javaClass.simpleName, e)
             result.postError("COMPRESS_ERROR", "out of memory: ${e.message ?: "decode failed"}")
-        } catch (e: Exception) {
-            if (showLog) Log.w(LOG_TAG, e.message ?: e.javaClass.simpleName, e)
-            result.postError("COMPRESS_ERROR", e.message ?: e.toString())
         }
     }
 

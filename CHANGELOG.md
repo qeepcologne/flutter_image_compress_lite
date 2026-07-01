@@ -1,3 +1,7 @@
+## 2.6.1
+
+- **Android**: fix temp-file leak in `ExifKeeper` on `keepExif: true` JPEG calls — the UUID-named cache file was not deleted after re-reading. Minor Kotlin refactor in `replyCatching`; no behavior change.
+
 ## 2.6.0+2
 
 - Docstring: platform-behavior notes for `autoCorrectionAngle` and `keepExif` on the class docstring; misc doc cleanup.

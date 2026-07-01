@@ -30,32 +30,28 @@ internal object Exif {
 /// Copies a curated subset of EXIF attributes from an original image
 /// onto a re-encoded image. JPEG-only (the framework `ExifInterface`
 /// requires a file-path target to `saveAttributes()`).
-internal class ExifKeeper {
-    private val oldExif: ExifInterface
-
-    constructor(filePath: String) {
-        oldExif = ExifInterface(filePath)
-    }
-
-    constructor(buf: ByteArray) {
-        oldExif = ExifInterface(ByteArrayInputStream(buf))
-    }
+internal class ExifKeeper private constructor(private val oldExif: ExifInterface) {
+    constructor(filePath: String) : this(ExifInterface(filePath))
+    constructor(buf: ByteArray) : this(ExifInterface(ByteArrayInputStream(buf)))
 
     fun writeToOutputStream(context: Context, encoded: ByteArrayOutputStream): ByteArrayOutputStream {
+        val file = File(context.cacheDir, "${UUID.randomUUID()}.jpg")
         return try {
-            val file = File(context.cacheDir, "${UUID.randomUUID()}.jpg")
             file.outputStream().use { it.write(encoded.toByteArray()) }
-            val newExif = ExifInterface(file.absolutePath)
-            for (attribute in PRESERVED_ATTRIBUTES) {
-                oldExif.getAttribute(attribute)?.let { newExif.setAttribute(attribute, it) }
+            ExifInterface(file.absolutePath).apply {
+                for (attribute in PRESERVED_ATTRIBUTES) {
+                    oldExif.getAttribute(attribute)?.let { setAttribute(attribute, it) }
+                }
+                saveAttributes()
             }
-            newExif.saveAttributes()
             ByteArrayOutputStream().also { dest ->
                 file.inputStream().use { it.copyTo(dest) }
             }
         } catch (ex: Exception) {
             Log.e(LOG_TAG, "exif copy failed", ex)
             encoded
+        } finally {
+            file.delete()
         }
     }
 
