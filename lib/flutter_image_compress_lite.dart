@@ -57,16 +57,20 @@ class FlutterImageCompress {
       throw CompressError('The image is empty.');
     }
     await _checkSupportPlatform(format);
-    return await _channel.invokeMethod('compressWithList', [
-      image,
-      minWidth,
-      minHeight,
-      quality,
-      rotate,
-      autoCorrectionAngle,
-      format.index,
-      keepExif,
-    ]);
+    final result = await _channel.invokeMethod<typed_data.Uint8List>(
+      'compressWithList',
+      [
+        image,
+        minWidth,
+        minHeight,
+        quality,
+        rotate,
+        autoCorrectionAngle,
+        format.index,
+        keepExif,
+      ],
+    );
+    return result!;
   }
 
   /// Compress file of [path] to [Uint8List].
@@ -178,7 +182,7 @@ Future<void> _checkSupportPlatform(CompressFormat format) async {
     throw UnsupportedError('WebP encoding is not supported on iOS');
   }
   if (format == .heic && Platform.isAndroid) {
-    final int version = await FlutterImageCompress._channel.invokeMethod('getSystemVersion');
+    final int version = (await FlutterImageCompress._channel.invokeMethod<int>('getSystemVersion'))!;
     if (version < 28) {
       throw UnsupportedError('HEIC encoding requires Android API 28+ (Android 9)');
     }

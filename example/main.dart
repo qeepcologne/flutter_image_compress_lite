@@ -16,9 +16,6 @@ Future<XFile> compressFile(String sourcePath, String targetPath) => FlutterImage
   sourcePath,
   targetPath,
   quality: 88,
-  minWidth: 1920,
-  minHeight: 1080,
-  format: .jpeg,
   keepExif: true,
 );
 

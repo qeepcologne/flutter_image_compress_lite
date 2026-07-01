@@ -1,6 +1,6 @@
 ## 2.6.0+1
 
-- Cosmetic: Dart source cleanup (arrow syntax, dead intermediates). No behavior change.
+- Cosmetic: Dart source cleanup. No behavior change.
 
 ## 2.6.0
 

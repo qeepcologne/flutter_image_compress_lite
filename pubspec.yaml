@@ -8,9 +8,9 @@ environment:
   flutter: '>=3.44.0'
 
 dependencies:
+  cross_file: ^0.3.5+3
   flutter:
     sdk: flutter
-  cross_file: ^0.3.5+3
 
 flutter:
   plugin:
