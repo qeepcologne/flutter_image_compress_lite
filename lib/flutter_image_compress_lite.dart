@@ -33,6 +33,13 @@ export 'src/compress_format.dart';
 /// — one axis lands exactly on its minimum, the other exceeds it. Images
 /// already smaller than the minimum on both axes are returned at their
 /// original size (never upscaled).
+///
+/// **Platform notes** (behavior inherited from upstream flutter_image_compress):
+///  - `autoCorrectionAngle` is Android-only. iOS decodes via `UIImage`,
+///    which always auto-orients from embedded EXIF regardless of the flag.
+///  - `keepExif` on Android preserves EXIF for JPEG output only; PNG,
+///    HEIC, and WebP silently drop EXIF. iOS preserves EXIF on all
+///    encoded formats it supports (JPEG, PNG, HEIC).
 class FlutterImageCompress {
   FlutterImageCompress._();
 

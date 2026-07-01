@@ -1,3 +1,7 @@
+## 2.6.0+2
+
+- Docstring: platform-behavior notes for `autoCorrectionAngle` and `keepExif` on the class docstring; misc doc cleanup.
+
 ## 2.6.0+1
 
 - Cosmetic: Dart source cleanup. No behavior change.
