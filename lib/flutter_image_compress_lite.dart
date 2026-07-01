@@ -40,9 +40,7 @@ class FlutterImageCompress {
   /// Enables verbose logging from the native side (Android `Log.i`,
   /// iOS `os.Logger`). Off by default. Useful for debugging compression
   /// pipelines; leave disabled in release builds.
-  static set showNativeLog(bool value) {
-    _channel.invokeMethod('showLog', value);
-  }
+  static set showNativeLog(bool value) => _channel.invokeMethod('showLog', value);
 
   /// Compress image from [Uint8List] to [Uint8List].
   static Future<typed_data.Uint8List> compressWithList(
