@@ -23,8 +23,9 @@ export 'src/compress_format.dart';
 /// Image Compress plugin.
 ///
 /// Compress images using native platform APIs (iOS/Android).
-/// Supports JPEG, PNG, HEIC output. WebP encoding only on Android;
-/// WebP decoding works on both platforms.
+/// Supports JPEG and PNG output on both platforms. HEIC output requires
+/// Android API 28+ (works on all supported iOS versions). WebP encoding
+/// is Android-only; WebP decoding works on both.
 ///
 /// **About `minWidth` / `minHeight`:** these are *lower bounds* on the
 /// output dimensions, not target sizes. The image is downscaled with its

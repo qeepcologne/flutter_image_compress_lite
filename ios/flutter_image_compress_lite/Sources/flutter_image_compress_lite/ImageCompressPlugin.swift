@@ -77,8 +77,8 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
         }
         guard let compressed = Compressor.encode(image: image, params: request.params) else {
             // Compressor.encode returns nil only on edge cases (missing cgImage, encoder
-            // failure) — surface them as COMPRESS_ERROR so the non-nullable Dart return type
-            // of compressWithList holds, instead of silently delivering nil to a Future<Uint8List>.
+            // failure) — surface them as COMPRESS_ERROR so the non-nullable Dart return types
+            // hold, instead of silently delivering nil to the caller's Future.
             return .failure(code: "COMPRESS_ERROR", message: "encoder returned no data")
         }
         let output = request.params.keepExif ? applyExif(compressed) : compressed
