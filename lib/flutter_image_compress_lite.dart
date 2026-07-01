@@ -57,7 +57,7 @@ class FlutterImageCompress {
       throw CompressError('The image is empty.');
     }
     await _checkSupportPlatform(format);
-    final result = await _channel.invokeMethod('compressWithList', [
+    return await _channel.invokeMethod('compressWithList', [
       image,
       minWidth,
       minHeight,
@@ -67,7 +67,6 @@ class FlutterImageCompress {
       format.index,
       keepExif,
     ]);
-    return result;
   }
 
   /// Compress file of [path] to [Uint8List].

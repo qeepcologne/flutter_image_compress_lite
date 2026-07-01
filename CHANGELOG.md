@@ -1,3 +1,7 @@
+## 2.6.0+2
+
+- Cosmetic: Dart source cleanup (arrow syntax, dead intermediates). No behavior change.
+
 ## 2.6.0
 
 - **Breaking**: `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` return non-nullable types (`Uint8List`, `XFile`, `Uint8List`). The native sides have always thrown `PlatformException` on failure since 2.5.2 and never delivered `null` on the happy path — the `?` was leftover from the pre-2.5.2 contract. Source-only break for callers using `?? fallback` or `if (result != null)`.
