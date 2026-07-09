@@ -30,10 +30,9 @@ enum CompressFormat {
 
 /// Image Compress plugin.
 ///
-/// Compress images using native platform APIs (iOS/Android).
-/// Supports JPEG and PNG output on both platforms. HEIC output requires
-/// Android API 28+ (works on all supported iOS versions). WebP encoding
-/// is Android-only; WebP decoding works on both.
+/// Compress images using native platform APIs (iOS/Android). See
+/// [CompressFormat] for supported output encodings and their platform
+/// constraints.
 ///
 /// **About `minWidth` / `minHeight`:** these are *lower bounds* on the
 /// output dimensions, not target sizes. The image is downscaled with its
@@ -81,7 +80,7 @@ class FlutterImageCompress {
     return result!;
   }
 
-  /// Compress file of [path] to [Uint8List].
+  /// Compress file at [path] to [Uint8List].
   static Future<Uint8List> compressWithFile(
     String path, {
     int minWidth = _Defaults.minWidth,
@@ -127,7 +126,7 @@ class FlutterImageCompress {
     return XFile(result!);
   }
 
-  /// Compress image from asset.
+  /// Compress image from bundled asset [assetName] to [Uint8List].
   static Future<Uint8List> compressAssetImage(
     String assetName, {
     int minWidth = _Defaults.minWidth,

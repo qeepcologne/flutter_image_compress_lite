@@ -31,8 +31,6 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 26.4.1+ |
 
-Also incorporates fixes and quality improvements for several long-standing upstream issues — see the [CHANGELOG](CHANGELOG.md) for specifics.
-
 ## Usage
 
 ```yaml
@@ -53,7 +51,7 @@ See [`example/main.dart`](example/main.dart) for the bytes-in / HEIC / WebP / as
 
 ## Migrating from flutter_image_compress
 
-Same `FlutterImageCompress` method names and core parameters as the upstream — only a handful of legacy knobs have been dropped. If you used the defaults, step 1 is likely the only one that touches your code:
+Same `FlutterImageCompress` method names and core parameters as the upstream. A handful of legacy parameters, a custom exception class, and the nullable-return contract have been dropped; the rest is unchanged. If you used the defaults, step 1 is likely the only one that touches your code:
 
 1. Swap the package name in `pubspec.yaml` and every `import` from `flutter_image_compress` to `flutter_image_compress_lite`.
 2. Drop the `numberOfRetries`, `inSampleSize`, and `autoCorrectionAngle` parameters from any call site. Decode-time `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException`; EXIF orientation is always honored on both platforms.
