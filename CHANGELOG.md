@@ -1,7 +1,7 @@
 ## 2.7.0
 
 - **Breaking**: remove `autoCorrectionAngle`. Both platforms now unconditionally auto-orient from EXIF; the flag was Android-only (iOS's `UIImage` always auto-orients regardless), so setting it to `false` on iOS was a silent no-op. Callers on the default (`true`) are unaffected.
-- **Breaking**: rename `CompressError` → `CompressException` — the class already `implements Exception`, the old name was a leftover from when it extended `Error`.
+- **Breaking**: remove `CompressError`; Dart-side input-validation failures now throw the standard `ArgumentError`. Consistent with the `UnsupportedError` already thrown for platform-support failures — everything Dart-side is now an `Error`, everything native-side is a `PlatformException`.
 
 ## 2.6.2+1
 

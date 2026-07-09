@@ -57,7 +57,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 
 1. Swap the package name in `pubspec.yaml` and every `import` from `flutter_image_compress` to `flutter_image_compress_lite`.
 2. Drop the `numberOfRetries`, `inSampleSize`, and `autoCorrectionAngle` parameters from any call site. Decode-time `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException`; EXIF orientation is always honored on both platforms.
-3. Rename `CompressError` catches to `CompressException` — it's an `Exception`, not an `Error`, and the name now says so.
+3. Replace any `on CompressError catch (e)` with `on ArgumentError catch (e)` (or bare `catch (e)`). Dart-side input-validation now throws the standard `dart:core` `ArgumentError`; a bare catch — or `on Error catch (e)`, already required to handle the `UnsupportedError` cases below — covers it.
 4. Drop null-checks on the return values of `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` — these throw on failure here (and treat empty input as a failure) rather than returning `null`.
 
 ## Errors
@@ -66,7 +66,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 - WebP encoding on iOS (decoding works)
 - HEIC encoding on Android < API 28 (Android 9)
 
-`CompressException` is thrown for invalid input caught Dart-side (empty image bytes, empty asset, missing file).
+`ArgumentError` is thrown for invalid input caught Dart-side (empty image bytes, empty asset, missing file, same source and target path).
 
 `PlatformException` is thrown by the native side when something goes wrong below the channel:
 - `FILE_NOT_FOUND` — the source file could not be read.
