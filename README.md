@@ -31,6 +31,8 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 26.4.1+ |
 
+Also incorporates fixes and quality improvements for several long-standing upstream issues — see the [CHANGELOG](CHANGELOG.md) for specifics.
+
 ## Usage
 
 ```yaml
