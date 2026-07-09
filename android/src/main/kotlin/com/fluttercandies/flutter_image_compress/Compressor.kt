@@ -16,22 +16,15 @@ import kotlin.math.min
 internal class CompressException(val code: String, message: String?) : Exception(message)
 
 /// Order must match the Dart `CompressFormat` enum so `index` is the wire value.
-enum class CompressFormat(val typeName: String) {
-    JPEG("jpeg"),
-    PNG("png"),
-    HEIC("heic"),
-    WEBP("webp");
-
-    /// Null for HEIC, which goes through androidx.heifwriter instead of
-    /// `Bitmap.compress()`. The platform `Bitmap.CompressFormat` enum has no
-    /// HEIC entry at any API level.
-    val bitmapFormat: Bitmap.CompressFormat?
-        get() = when (this) {
-            JPEG -> Bitmap.CompressFormat.JPEG
-            PNG -> Bitmap.CompressFormat.PNG
-            WEBP -> Bitmap.CompressFormat.WEBP
-            HEIC -> null
-        }
+///
+/// `bitmapFormat` is null for HEIC, which goes through `androidx.heifwriter`
+/// instead of `Bitmap.compress()` (the platform `Bitmap.CompressFormat` enum
+/// has no HEIC entry at any API level).
+enum class CompressFormat(val bitmapFormat: Bitmap.CompressFormat?) {
+    JPEG(Bitmap.CompressFormat.JPEG),
+    PNG(Bitmap.CompressFormat.PNG),
+    HEIC(null),
+    WEBP(Bitmap.CompressFormat.WEBP);
 
     companion object {
         fun fromIndex(index: Int): CompressFormat? = entries.getOrNull(index)

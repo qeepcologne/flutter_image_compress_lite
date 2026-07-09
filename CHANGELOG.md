@@ -1,3 +1,7 @@
+## 2.6.2+1
+
+- Android internal: drop unused `CompressFormat.typeName`; move `bitmapFormat` to the enum constructor.
+
 ## 2.6.2
 
 - **Android**: JPEG decode now uses `ARGB_8888` (was `RGB_565`) — eliminates gradient banding on the compressed output. Cost: ~2× decode memory; OOM still surfaces as `COMPRESS_ERROR`.
