@@ -31,6 +31,8 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 26.4.1+ |
 
+Also fixes long-standing Android upstream bugs — most visibly JPEG gradient banding on decode and EXIF-orientation flip variants that came out mirrored — see the [CHANGELOG](CHANGELOG.md) for the full list.
+
 ## Usage
 
 ```yaml
