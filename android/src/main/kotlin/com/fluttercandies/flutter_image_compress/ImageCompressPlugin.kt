@@ -62,14 +62,14 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
         val bytes = args[0] as ByteArray
         val p = CompressArgs(args, rotateIndex = 4) ?: throw CompressException("BAD_ARGS", "unknown compress format")
-        val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(bytes) else 0
-        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
+        val exif = if (p.autoCorrectionAngle) Exif.getOrientation(bytes) else Orientation.NONE
+        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         ByteArrayOutputStream().use { out ->
             Compressor.encodeBytes(
                 context, p.format, bytes, out,
-                w, h, p.quality, p.rotate + exifRotate,
-                p.keepExif,
+                w, h, p.quality, p.rotate + exif.degrees,
+                exif.flipHorizontal, p.keepExif,
             )
             out.toByteArray()
         }
@@ -79,14 +79,14 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
         val path = args[0] as String
         val p = CompressArgs(args, rotateIndex = 4) ?: throw CompressException("BAD_ARGS", "unknown compress format")
-        val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(File(path)) else 0
-        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
+        val exif = if (p.autoCorrectionAngle) Exif.getOrientation(File(path)) else Orientation.NONE
+        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         ByteArrayOutputStream().use { out ->
             Compressor.encodeFile(
                 context, p.format, path, out,
-                w, h, p.quality, p.rotate + exifRotate,
-                p.keepExif,
+                w, h, p.quality, p.rotate + exif.degrees,
+                exif.flipHorizontal, p.keepExif,
             )
             out.toByteArray()
         }
@@ -97,15 +97,15 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         val path = args[0] as String
         val targetPath = args[4] as String
         val p = CompressArgs(args, rotateIndex = 5) ?: throw CompressException("BAD_ARGS", "unknown compress format")
-        val exifRotate = if (p.autoCorrectionAngle) Exif.getRotationDegrees(File(path)) else 0
-        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exifRotate)
+        val exif = if (p.autoCorrectionAngle) Exif.getOrientation(File(path)) else Orientation.NONE
+        val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         try {
             File(targetPath).outputStream().use { out ->
                 Compressor.encodeFile(
                     context, p.format, path, out,
-                    w, h, p.quality, p.rotate + exifRotate,
-                    p.keepExif,
+                    w, h, p.quality, p.rotate + exif.degrees,
+                    exif.flipHorizontal, p.keepExif,
                 )
             }
         } catch (e: CompressException) {

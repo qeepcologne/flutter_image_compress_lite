@@ -49,11 +49,12 @@ internal object Compressor {
         minHeight: Int,
         quality: Int,
         rotate: Int,
+        flipHorizontal: Boolean,
         keepExif: Boolean,
     ) {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions())
             ?: throw CompressException("BAD_IMAGE", "could not decode image bytes")
-        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
+        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate, flipHorizontal)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(bytes) }
     }
 
@@ -66,12 +67,13 @@ internal object Compressor {
         minHeight: Int,
         quality: Int,
         rotate: Int,
+        flipHorizontal: Boolean,
         keepExif: Boolean,
     ) {
         if (!File(path).exists()) throw CompressException("FILE_NOT_FOUND", "could not read $path")
         val bitmap = BitmapFactory.decodeFile(path, decodeOptions())
             ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
-        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
+        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate, flipHorizontal)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
     }
 
@@ -83,6 +85,7 @@ internal object Compressor {
         minHeight: Int,
         quality: Int,
         rotate: Int,
+        flipHorizontal: Boolean,
     ): ByteArray {
         val w = bitmap.width.toFloat()
         val h = bitmap.height.toFloat()
@@ -94,7 +97,7 @@ internal object Compressor {
         val destH = (h / scale).toInt()
         log("dst width = $destW")
         log("dst height = $destH")
-        val scaled = Bitmap.createScaledBitmap(bitmap, destW, destH, true).rotate(rotate)
+        val scaled = Bitmap.createScaledBitmap(bitmap, destW, destH, true).rotate(rotate, flipHorizontal)
         return if (format == CompressFormat.HEIC) {
             encodeHeic(context, scaled, quality)
         } else {
@@ -146,11 +149,13 @@ internal object Compressor {
     }
 }
 
-private fun Bitmap.rotate(degrees: Int): Bitmap = if (degrees % 360 != 0) {
-    val matrix = Matrix().apply { setRotate(degrees.toFloat()) }
-    Bitmap.createBitmap(this, 0, 0, width, height, matrix, false)
-} else {
-    this
+private fun Bitmap.rotate(degrees: Int, flipHorizontal: Boolean): Bitmap {
+    if (degrees % 360 == 0 && !flipHorizontal) return this
+    val matrix = Matrix().apply {
+        if (degrees % 360 != 0) postRotate(degrees.toFloat())
+        if (flipHorizontal) postScale(-1f, 1f)
+    }
+    return Bitmap.createBitmap(this, 0, 0, width, height, matrix, false)
 }
 
 private fun Bitmap.calcScale(minWidth: Int, minHeight: Int): Float {

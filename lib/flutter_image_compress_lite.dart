@@ -34,9 +34,12 @@ export 'src/compress_format.dart';
 /// already smaller than the minimum on both axes are returned at their
 /// original size (never upscaled).
 ///
-/// **Platform notes** (behavior inherited from upstream flutter_image_compress):
-///  - `autoCorrectionAngle` is Android-only. iOS decodes via `UIImage`,
+/// **Platform notes:**
+///  - `autoCorrectionAngle` is Android-only — iOS decodes via `UIImage`,
 ///    which always auto-orients from embedded EXIF regardless of the flag.
+///    When applied, both platforms handle all 8 EXIF orientation values,
+///    including the compound flip variants (`TRANSPOSE`, `TRANSVERSE`,
+///    `FLIP_HORIZONTAL`, `FLIP_VERTICAL`).
 ///  - `keepExif` on Android preserves EXIF for JPEG output only; PNG,
 ///    HEIC, and WebP silently drop EXIF. iOS preserves EXIF on all
 ///    encoded formats it supports (JPEG, PNG, HEIC).

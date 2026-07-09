@@ -23,7 +23,7 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "showLog" {
             Self.showLog = (call.arguments as? Bool) ?? false
-            result(1)
+            result(nil)
             return
         }
 

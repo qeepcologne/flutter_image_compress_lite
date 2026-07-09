@@ -2,6 +2,7 @@
 
 - **Android**: JPEG decode now uses `ARGB_8888` (was `RGB_565`) — eliminates gradient banding on the compressed output. Cost: ~2× decode memory; OOM still surfaces as `COMPRESS_ERROR`.
 - **Android**: `keepExif: true` now copies every EXIF tag the framework `ExifInterface` knows about (reflectively enumerated), matching the iOS behavior. Only `TAG_ORIENTATION` is skipped since pixels are already rotated. Previously only 18 curated tags were preserved.
+- **Android**: `autoCorrectionAngle: true` now honors all 8 EXIF orientations including the compound flip variants (2 `FLIP_HORIZONTAL`, 4 `FLIP_VERTICAL`, 5 `TRANSPOSE`, 7 `TRANSVERSE`). Previously these were treated as no-rotation. iOS already handled these via `UIImage`'s built-in orientation. Common cases (1/3/6/8) are unchanged.
 
 ## 2.6.1
 
