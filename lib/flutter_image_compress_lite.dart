@@ -6,7 +6,6 @@
 library;
 
 import 'dart:io';
-import 'dart:typed_data' as typed_data;
 
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/painting.dart';
@@ -53,8 +52,8 @@ class FlutterImageCompress {
   static set showNativeLog(bool value) => _channel.invokeMethod('showLog', value);
 
   /// Compress image from [Uint8List] to [Uint8List].
-  static Future<typed_data.Uint8List> compressWithList(
-    typed_data.Uint8List image, {
+  static Future<Uint8List> compressWithList(
+    Uint8List image, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
     int quality = _Defaults.quality,
@@ -66,7 +65,7 @@ class FlutterImageCompress {
       throw CompressError('The image is empty.');
     }
     await _checkSupportPlatform(format);
-    final result = await _channel.invokeMethod<typed_data.Uint8List>(
+    final result = await _channel.invokeMethod<Uint8List>(
       'compressWithList',
       [image, minWidth, minHeight, quality, rotate, format.index, keepExif],
     );
@@ -74,7 +73,7 @@ class FlutterImageCompress {
   }
 
   /// Compress file of [path] to [Uint8List].
-  static Future<typed_data.Uint8List> compressWithFile(
+  static Future<Uint8List> compressWithFile(
     String path, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
@@ -87,7 +86,7 @@ class FlutterImageCompress {
       throw CompressError('Image file does not exist at $path.');
     }
     await _checkSupportPlatform(format);
-    final result = await _channel.invokeMethod<typed_data.Uint8List>(
+    final result = await _channel.invokeMethod<Uint8List>(
       'compressWithFile',
       [path, minWidth, minHeight, quality, rotate, format.index, keepExif],
     );
@@ -120,7 +119,7 @@ class FlutterImageCompress {
   }
 
   /// Compress image from asset.
-  static Future<typed_data.Uint8List> compressAssetImage(
+  static Future<Uint8List> compressAssetImage(
     String assetName, {
     int minWidth = _Defaults.minWidth,
     int minHeight = _Defaults.minHeight,
