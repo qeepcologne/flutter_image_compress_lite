@@ -39,7 +39,9 @@ export 'src/compress_format.dart';
 ///    which always auto-orients from embedded EXIF regardless of the flag.
 ///    When applied, both platforms handle all 8 EXIF orientation values,
 ///    including the compound flip variants (`TRANSPOSE`, `TRANSVERSE`,
-///    `FLIP_HORIZONTAL`, `FLIP_VERTICAL`).
+///    `FLIP_HORIZONTAL`, `FLIP_VERTICAL`). Set to `false` only for images
+///    from Android camera stacks that both write an EXIF Orientation tag
+///    and pre-rotate the pixel data — honoring the tag would rotate twice.
 ///  - `keepExif` on Android preserves EXIF for JPEG output only; PNG,
 ///    HEIC, and WebP silently drop EXIF. iOS preserves EXIF on all
 ///    encoded formats it supports (JPEG, PNG, HEIC).
