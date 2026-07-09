@@ -11,11 +11,22 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
-import 'src/compress_format.dart';
-
 export 'package:cross_file/cross_file.dart';
 
-export 'src/compress_format.dart';
+/// Output encoding for compressed images.
+enum CompressFormat {
+  /// JPEG — lossy, no alpha. Default.
+  jpeg,
+
+  /// PNG — lossless, with alpha.
+  png,
+
+  /// HEIC (HEVC in HEIF container) — lossy, with alpha. Android needs API 28+.
+  heic,
+
+  /// WebP — lossy, with alpha. Encoding is Android-only.
+  webp;
+}
 
 /// Image Compress plugin.
 ///
