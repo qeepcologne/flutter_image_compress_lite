@@ -6,6 +6,7 @@ import android.util.Log
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.UUID
 
 /// Reads orientation from image bytes or a file.
@@ -27,9 +28,11 @@ internal object Exif {
         }
 }
 
-/// Copies a curated subset of EXIF attributes from an original image
-/// onto a re-encoded image. JPEG-only (the framework `ExifInterface`
-/// requires a file-path target to `saveAttributes()`).
+/// Copies every known EXIF attribute from an original image onto a
+/// re-encoded image (matches iOS behavior). Only `TAG_ORIENTATION` is
+/// skipped because pixels are already rotated during compression.
+/// JPEG-only — the framework `ExifInterface.saveAttributes()` supports
+/// no other output format.
 internal class ExifKeeper private constructor(private val oldExif: ExifInterface) {
     constructor(filePath: String) : this(ExifInterface(filePath))
     constructor(buf: ByteArray) : this(ExifInterface(ByteArrayInputStream(buf)))
@@ -39,8 +42,9 @@ internal class ExifKeeper private constructor(private val oldExif: ExifInterface
         return try {
             file.outputStream().use { it.write(encoded.toByteArray()) }
             ExifInterface(file.absolutePath).apply {
-                for (attribute in PRESERVED_ATTRIBUTES) {
-                    oldExif.getAttribute(attribute)?.let { setAttribute(attribute, it) }
+                for (name in ALL_TAG_NAMES) {
+                    if (name == ExifInterface.TAG_ORIENTATION) continue
+                    oldExif.getAttribute(name)?.let { setAttribute(name, it) }
                 }
                 saveAttributes()
             }
@@ -56,29 +60,18 @@ internal class ExifKeeper private constructor(private val oldExif: ExifInterface
     }
 
     private companion object {
-        // TAG_PHOTOGRAPHIC_SENSITIVITY is the modern EXIF 2.3 name but lives only on AndroidX
-        // ExifInterface; the framework class still exposes the deprecated TAG_ISO_SPEED_RATINGS,
-        // which is what we have to use. Same tag-id (34855), same wire bytes.
-        @Suppress("DEPRECATION")
-        private val PRESERVED_ATTRIBUTES = listOf(
-            ExifInterface.TAG_F_NUMBER,
-            ExifInterface.TAG_EXPOSURE_TIME,
-            ExifInterface.TAG_ISO_SPEED_RATINGS,
-            ExifInterface.TAG_GPS_ALTITUDE,
-            ExifInterface.TAG_GPS_ALTITUDE_REF,
-            ExifInterface.TAG_FOCAL_LENGTH,
-            ExifInterface.TAG_GPS_DATESTAMP,
-            ExifInterface.TAG_WHITE_BALANCE,
-            ExifInterface.TAG_GPS_PROCESSING_METHOD,
-            ExifInterface.TAG_GPS_TIMESTAMP,
-            ExifInterface.TAG_DATETIME,
-            ExifInterface.TAG_FLASH,
-            ExifInterface.TAG_GPS_LATITUDE,
-            ExifInterface.TAG_GPS_LATITUDE_REF,
-            ExifInterface.TAG_GPS_LONGITUDE,
-            ExifInterface.TAG_GPS_LONGITUDE_REF,
-            ExifInterface.TAG_MAKE,
-            ExifInterface.TAG_MODEL,
-        )
+        // Enumerate every `ExifInterface.TAG_*` String constant reflectively so the copy
+        // matches iOS's "pass the whole property dict through" behavior (see ExifKeeper.swift).
+        // Framework `android.media.ExifInterface` is platform code and not obfuscated on
+        // the consumer side; reflection over its declared fields is stable.
+        private val ALL_TAG_NAMES: List<String> by lazy {
+            ExifInterface::class.java.declaredFields
+                .filter {
+                    it.name.startsWith("TAG_") &&
+                        it.type == String::class.java &&
+                        Modifier.isStatic(it.modifiers)
+                }
+                .mapNotNull { runCatching { it.get(null) as? String }.getOrNull() }
+        }
     }
 }

@@ -1,3 +1,8 @@
+## 2.6.2
+
+- **Android**: JPEG decode now uses `ARGB_8888` (was `RGB_565`) — eliminates gradient banding on the compressed output. Cost: ~2× decode memory; OOM still surfaces as `COMPRESS_ERROR`.
+- **Android**: `keepExif: true` now copies every EXIF tag the framework `ExifInterface` knows about (reflectively enumerated), matching the iOS behavior. Only `TAG_ORIENTATION` is skipped since pixels are already rotated. Previously only 18 curated tags were preserved.
+
 ## 2.6.1
 
 - **Android**: fix temp-file leak in `ExifKeeper` on `keepExif: true` JPEG calls — the UUID-named cache file was not deleted after re-reading. Minor Kotlin refactor in `replyCatching`; no behavior change.

@@ -51,7 +51,7 @@ internal object Compressor {
         rotate: Int,
         keepExif: Boolean,
     ) {
-        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions(format))
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions())
             ?: throw CompressException("BAD_IMAGE", "could not decode image bytes")
         val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(bytes) }
@@ -69,7 +69,7 @@ internal object Compressor {
         keepExif: Boolean,
     ) {
         if (!File(path).exists()) throw CompressException("FILE_NOT_FOUND", "could not read $path")
-        val bitmap = BitmapFactory.decodeFile(path, decodeOptions(format))
+        val bitmap = BitmapFactory.decodeFile(path, decodeOptions())
             ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
         val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
@@ -141,16 +141,8 @@ internal object Compressor {
         }
     }
 
-    private fun decodeOptions(format: CompressFormat): BitmapFactory.Options {
-        val options = BitmapFactory.Options()
-        // Only JPEG is opaque; PNG/WebP/HEIC may carry alpha and would silently
-        // lose transparency under RGB_565.
-        options.inPreferredConfig = if (format == CompressFormat.JPEG) {
-            Bitmap.Config.RGB_565
-        } else {
-            Bitmap.Config.ARGB_8888
-        }
-        return options
+    private fun decodeOptions() = BitmapFactory.Options().apply {
+        inPreferredConfig = Bitmap.Config.ARGB_8888
     }
 }
 
