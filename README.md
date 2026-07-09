@@ -56,10 +56,9 @@ See [`example/main.dart`](example/main.dart) for the bytes-in / HEIC / WebP / as
 Same `FlutterImageCompress` method names and core parameters as the upstream — only a handful of legacy knobs have been dropped. If you used the defaults, step 1 is likely the only one that touches your code:
 
 1. Swap the package name in `pubspec.yaml` and every `import` from `flutter_image_compress` to `flutter_image_compress_lite`.
-2. Drop the `numberOfRetries` parameter from any call site. Decode-time `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException`.
-3. Drop the `inSampleSize` parameter from any call site.
-4. If you catch on `Error` to handle `CompressError`, switch to `Exception` (or the bare `catch (e)`) — `CompressError implements Exception` here.
-5. Drop null-checks on the return values of `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` — these throw on failure here (and treat empty input as a failure) rather than returning `null`.
+2. Drop the `numberOfRetries`, `inSampleSize`, and `autoCorrectionAngle` parameters from any call site. Decode-time `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException`; EXIF orientation is always honored on both platforms.
+3. If you catch on `Error` to handle `CompressError`, switch to `Exception` (or the bare `catch (e)`) — `CompressError implements Exception` here.
+4. Drop null-checks on the return values of `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` — these throw on failure here (and treat empty input as a failure) rather than returning `null`.
 
 ## Errors
 
