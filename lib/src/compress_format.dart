@@ -1,6 +1,4 @@
-/// Output encoding for compressed images. WebP encoding is Android-only;
-/// HEIC encoding requires Android API 28+ (iOS supports it on all
-/// supported versions).
+/// Output encoding for compressed images.
 enum CompressFormat {
   /// JPEG — lossy, no alpha. Default.
   jpeg,
