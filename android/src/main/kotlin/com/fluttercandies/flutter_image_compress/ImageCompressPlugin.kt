@@ -62,7 +62,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
         val bytes = args[0] as ByteArray
         val p = CompressArgs(args, rotateIndex = 4) ?: throw CompressException("BAD_ARGS", "unknown compress format")
-        val exif = if (p.autoCorrectionAngle) Exif.getOrientation(bytes) else Orientation.NONE
+        val exif = Exif.getOrientation(bytes)
         val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         ByteArrayOutputStream().use { out ->
@@ -79,7 +79,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as List<Any>
         val path = args[0] as String
         val p = CompressArgs(args, rotateIndex = 4) ?: throw CompressException("BAD_ARGS", "unknown compress format")
-        val exif = if (p.autoCorrectionAngle) Exif.getOrientation(File(path)) else Orientation.NONE
+        val exif = Exif.getOrientation(File(path))
         val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         ByteArrayOutputStream().use { out ->
@@ -97,7 +97,7 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         val path = args[0] as String
         val targetPath = args[4] as String
         val p = CompressArgs(args, rotateIndex = 5) ?: throw CompressException("BAD_ARGS", "unknown compress format")
-        val exif = if (p.autoCorrectionAngle) Exif.getOrientation(File(path)) else Orientation.NONE
+        val exif = Exif.getOrientation(File(path))
         val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         try {
@@ -164,30 +164,28 @@ internal fun log(any: Any?) {
 }
 
 /// The shared channel arguments, parsed by position. All three calls share the same layout
-/// from [rotateIndex] onward (rotate, autoCorrectionAngle, format, keepExif); only
-/// compressWithFileAndGetFile shifts it by one to insert `targetPath` at 4. Returns null
-/// when the format index doesn't map to a known [CompressFormat]. Mirrors the iOS
-/// `CompressParams(args:rotateIndex:)` so the two platforms parse the wire format the same way.
+/// from [rotateIndex] onward (rotate, format, keepExif); only compressWithFileAndGetFile
+/// shifts it by one to insert `targetPath` at 4. Returns null when the format index doesn't
+/// map to a known [CompressFormat]. Mirrors the iOS `CompressParams(args:rotateIndex:)` so
+/// the two platforms parse the wire format the same way.
 private class CompressArgs private constructor(
     val format: CompressFormat,
     val minWidth: Int,
     val minHeight: Int,
     val quality: Int,
     val rotate: Int,
-    val autoCorrectionAngle: Boolean,
     val keepExif: Boolean,
 ) {
     companion object {
         operator fun invoke(args: List<Any>, rotateIndex: Int): CompressArgs? {
-            val format = CompressFormat.fromIndex(args[rotateIndex + 2] as Int) ?: return null
+            val format = CompressFormat.fromIndex(args[rotateIndex + 1] as Int) ?: return null
             return CompressArgs(
                 format = format,
                 minWidth = args[1] as Int,
                 minHeight = args[2] as Int,
                 quality = args[3] as Int,
                 rotate = args[rotateIndex] as Int,
-                autoCorrectionAngle = args[rotateIndex + 1] as Boolean,
-                keepExif = args[rotateIndex + 3] as Boolean,
+                keepExif = args[rotateIndex + 2] as Boolean,
             )
         }
     }

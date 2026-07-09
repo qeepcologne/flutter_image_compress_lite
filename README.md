@@ -37,7 +37,7 @@ Also incorporates fixes and quality improvements for several long-standing upstr
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.6.2
+  flutter_image_compress_lite: ^2.7.0
 ```
 
 ```dart

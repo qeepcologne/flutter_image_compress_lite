@@ -34,17 +34,14 @@ export 'src/compress_format.dart';
 /// already smaller than the minimum on both axes are returned at their
 /// original size (never upscaled).
 ///
-/// **Platform notes:**
-///  - `autoCorrectionAngle` is Android-only — iOS decodes via `UIImage`,
-///    which always auto-orients from embedded EXIF regardless of the flag.
-///    When applied, both platforms handle all 8 EXIF orientation values,
-///    including the compound flip variants (`TRANSPOSE`, `TRANSVERSE`,
-///    `FLIP_HORIZONTAL`, `FLIP_VERTICAL`). Set to `false` only for images
-///    from Android camera stacks that both write an EXIF Orientation tag
-///    and pre-rotate the pixel data — honoring the tag would rotate twice.
-///  - `keepExif` on Android preserves EXIF for JPEG output only; PNG,
-///    HEIC, and WebP silently drop EXIF. iOS preserves EXIF on all
-///    encoded formats it supports (JPEG, PNG, HEIC).
+/// **EXIF orientation:** both platforms always auto-orient from the
+/// embedded EXIF Orientation tag, handling all 8 values including the
+/// compound flip variants (`TRANSPOSE`, `TRANSVERSE`, `FLIP_HORIZONTAL`,
+/// `FLIP_VERTICAL`). Any `rotate` argument is applied on top.
+///
+/// **`keepExif`** on Android preserves EXIF for JPEG output only; PNG,
+/// HEIC, and WebP silently drop EXIF. iOS preserves EXIF on all encoded
+/// formats it supports (JPEG, PNG, HEIC).
 class FlutterImageCompress {
   FlutterImageCompress._();
 
@@ -62,7 +59,6 @@ class FlutterImageCompress {
     int minHeight = _Defaults.minHeight,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
-    bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
   }) async {
@@ -72,16 +68,7 @@ class FlutterImageCompress {
     await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod<typed_data.Uint8List>(
       'compressWithList',
-      [
-        image,
-        minWidth,
-        minHeight,
-        quality,
-        rotate,
-        autoCorrectionAngle,
-        format.index,
-        keepExif,
-      ],
+      [image, minWidth, minHeight, quality, rotate, format.index, keepExif],
     );
     return result!;
   }
@@ -93,7 +80,6 @@ class FlutterImageCompress {
     int minHeight = _Defaults.minHeight,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
-    bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
   }) async {
@@ -103,16 +89,7 @@ class FlutterImageCompress {
     await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod<typed_data.Uint8List>(
       'compressWithFile',
-      [
-        path,
-        minWidth,
-        minHeight,
-        quality,
-        rotate,
-        autoCorrectionAngle,
-        format.index,
-        keepExif,
-      ],
+      [path, minWidth, minHeight, quality, rotate, format.index, keepExif],
     );
     return result!;
   }
@@ -125,7 +102,6 @@ class FlutterImageCompress {
     int minHeight = _Defaults.minHeight,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
-    bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
   }) async {
@@ -138,17 +114,7 @@ class FlutterImageCompress {
     await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod<String>(
       'compressWithFileAndGetFile',
-      [
-        path,
-        minWidth,
-        minHeight,
-        quality,
-        targetPath,
-        rotate,
-        autoCorrectionAngle,
-        format.index,
-        keepExif,
-      ],
+      [path, minWidth, minHeight, quality, targetPath, rotate, format.index, keepExif],
     );
     return XFile(result!);
   }
@@ -160,7 +126,6 @@ class FlutterImageCompress {
     int minHeight = _Defaults.minHeight,
     int quality = _Defaults.quality,
     int rotate = _Defaults.rotate,
-    bool autoCorrectionAngle = _Defaults.autoCorrectionAngle,
     CompressFormat format = _Defaults.format,
     bool keepExif = _Defaults.keepExif,
   }) async {
@@ -178,7 +143,6 @@ class FlutterImageCompress {
       minWidth: minWidth,
       quality: quality,
       rotate: rotate,
-      autoCorrectionAngle: autoCorrectionAngle,
       format: format,
       keepExif: keepExif,
     );
@@ -207,7 +171,6 @@ class _Defaults {
   static const int minHeight = 1080;
   static const int quality = 95;
   static const int rotate = 0;
-  static const bool autoCorrectionAngle = true;
   static const CompressFormat format = .jpeg;
   static const bool keepExif = false;
 }

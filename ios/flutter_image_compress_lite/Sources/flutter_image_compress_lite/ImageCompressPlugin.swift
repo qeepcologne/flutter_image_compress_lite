@@ -144,35 +144,35 @@ struct Request: Sendable {
 
         switch method {
         case "compressWithList":
-            guard args.count >= 8,
+            guard args.count >= 7,
                   let typed = args[0] as? FlutterStandardTypedData,
-                  let formatIndex = (args[6] as? NSNumber)?.intValue,
+                  let formatIndex = (args[5] as? NSNumber)?.intValue,
                   let format = CompressFormat(rawValue: formatIndex)
             else { throw ParseError.badArgs }
             self.source = .bytes(typed.data)
             self.targetPath = nil
-            self.params = CompressParams(args: args, format: format, keepExifIndex: 7)
+            self.params = CompressParams(args: args, format: format, keepExifIndex: 6)
 
         case "compressWithFile":
-            guard args.count >= 8,
+            guard args.count >= 7,
                   let path = args[0] as? String,
-                  let formatIndex = (args[6] as? NSNumber)?.intValue,
+                  let formatIndex = (args[5] as? NSNumber)?.intValue,
                   let format = CompressFormat(rawValue: formatIndex)
             else { throw ParseError.badArgs }
             self.source = .file(path: path)
             self.targetPath = nil
-            self.params = CompressParams(args: args, format: format, keepExifIndex: 7)
+            self.params = CompressParams(args: args, format: format, keepExifIndex: 6)
 
         case "compressWithFileAndGetFile":
-            guard args.count >= 9,
+            guard args.count >= 8,
                   let path = args[0] as? String,
                   let target = args[4] as? String,
-                  let formatIndex = (args[7] as? NSNumber)?.intValue,
+                  let formatIndex = (args[6] as? NSNumber)?.intValue,
                   let format = CompressFormat(rawValue: formatIndex)
             else { throw ParseError.badArgs }
             self.source = .file(path: path)
             self.targetPath = target
-            self.params = CompressParams(args: args, format: format, keepExifIndex: 8, rotateIndex: 5)
+            self.params = CompressParams(args: args, format: format, keepExifIndex: 7, rotateIndex: 5)
 
         default:
             throw ParseError.badArgs

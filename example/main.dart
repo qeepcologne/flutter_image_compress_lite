@@ -2,7 +2,7 @@
 //
 // The plugin exposes static methods on `FlutterImageCompress`. All four
 // entry points accept the same tuning parameters (`minWidth`, `minHeight`,
-// `quality`, `rotate`, `format`, `keepExif`, `autoCorrectionAngle`);
+// `quality`, `rotate`, `format`, `keepExif`);
 // only the input/output shape differs.
 
 import 'dart:io';
