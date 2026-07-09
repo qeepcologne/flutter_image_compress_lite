@@ -60,7 +60,7 @@ Same `FlutterImageCompress` method names and core parameters as the upstream —
 3. Replace any `on CompressError catch (e)` with `on ArgumentError catch (e)` (or bare `catch (e)`). Dart-side input-validation now throws the standard `dart:core` `ArgumentError`; a bare catch — or `on Error catch (e)`, already required to handle the `UnsupportedError` cases below — covers it.
 4. Drop null-checks on the return values of `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` — these throw on failure here (and treat empty input as a failure) rather than returning `null`.
 
-## Errors
+## Error handling
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
 - WebP encoding on iOS (decoding works)
