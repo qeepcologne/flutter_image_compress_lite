@@ -11,12 +11,12 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
-import 'src/compress_error.dart';
+import 'src/compress_exception.dart';
 import 'src/compress_format.dart';
 
 export 'package:cross_file/cross_file.dart';
 
-export 'src/compress_error.dart';
+export 'src/compress_exception.dart';
 export 'src/compress_format.dart';
 
 /// Image Compress plugin.
@@ -62,7 +62,7 @@ class FlutterImageCompress {
     bool keepExif = _Defaults.keepExif,
   }) async {
     if (image.isEmpty) {
-      throw CompressError('The image is empty.');
+      throw CompressException('The image is empty.');
     }
     await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod<Uint8List>(
@@ -83,7 +83,7 @@ class FlutterImageCompress {
     bool keepExif = _Defaults.keepExif,
   }) async {
     if (!await File(path).exists()) {
-      throw CompressError('Image file does not exist at $path.');
+      throw CompressException('Image file does not exist at $path.');
     }
     await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod<Uint8List>(
@@ -105,10 +105,10 @@ class FlutterImageCompress {
     bool keepExif = _Defaults.keepExif,
   }) async {
     if (!await File(path).exists()) {
-      throw CompressError('Image file does not exist at $path.');
+      throw CompressException('Image file does not exist at $path.');
     }
     if (path == targetPath) {
-      throw CompressError('Target path and source path cannot be the same.');
+      throw CompressException('Target path and source path cannot be the same.');
     }
     await _checkSupportPlatform(format);
     final result = await _channel.invokeMethod<String>(
@@ -134,7 +134,7 @@ class FlutterImageCompress {
     final ByteData data = await key.bundle.load(key.name);
     final uint8List = data.buffer.asUint8List();
     if (uint8List.isEmpty) {
-      throw CompressError('The asset $assetName is empty.');
+      throw CompressException('The asset $assetName is empty.');
     }
     return compressWithList(
       uint8List,

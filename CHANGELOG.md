@@ -1,6 +1,7 @@
 ## 2.7.0
 
 - **Breaking**: remove `autoCorrectionAngle`. Both platforms now unconditionally auto-orient from EXIF; the flag was Android-only (iOS's `UIImage` always auto-orients regardless), so setting it to `false` on iOS was a silent no-op. Callers on the default (`true`) are unaffected.
+- **Breaking**: rename `CompressError` → `CompressException` — the class already `implements Exception`, the old name was a leftover from when it extended `Error`.
 
 ## 2.6.2+1
 
