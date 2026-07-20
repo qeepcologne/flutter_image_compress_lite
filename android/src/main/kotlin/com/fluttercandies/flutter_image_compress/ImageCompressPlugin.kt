@@ -26,7 +26,8 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
 
         private val mainHandler = Handler(Looper.getMainLooper())
 
-        private fun newExecutor(): ExecutorService = Executors.newFixedThreadPool(8)
+        private fun newExecutor(): ExecutorService =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
     }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {

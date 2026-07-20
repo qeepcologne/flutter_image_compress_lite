@@ -18,54 +18,58 @@ private func pixelExactFormat() -> UIGraphicsImageRendererFormat {
 }
 
 extension UIImage {
-    func scaled(toMinWidth minWidth: CGFloat, minHeight: CGFloat) -> UIImage {
-        let actualWidth = size.width
-        let actualHeight = size.height
-        let imgRatio = actualWidth / actualHeight
+    /// Scales to fit the min-width/min-height envelope and, if `degrees` is non-zero, rotates
+    /// in the same rasterization pass. Composing both transforms in one `UIGraphicsImageRenderer`
+    /// avoids allocating an intermediate scaled bitmap and resamples the source pixels only once.
+    func scaledAndRotated(toMinWidth minWidth: CGFloat,
+                          minHeight: CGFloat,
+                          degrees: CGFloat) -> UIImage {
+        let imgRatio = size.width / size.height
         let maxRatio = minWidth / minHeight
-        var scaleRatio: CGFloat = imgRatio < maxRatio
-            ? minWidth / actualWidth
-            : minHeight / actualHeight
-        scaleRatio = min(1, scaleRatio)
-        let target = CGSize(
-            width: floor(scaleRatio * actualWidth),
-            height: floor(scaleRatio * actualHeight)
+        let scaleRatio = min(1, imgRatio < maxRatio ? minWidth / size.width : minHeight / size.height)
+        let scaledSize = CGSize(
+            width:  floor(scaleRatio * size.width),
+            height: floor(scaleRatio * size.height)
         )
 
         if ImageCompressPlugin.showLog {
             log.info("scale = \(scaleRatio)")
-            log.info("dst width = \(target.width)")
-            log.info("dst height = \(target.height)")
+            log.info("dst width = \(scaledSize.width)")
+            log.info("dst height = \(scaledSize.height)")
+            if degrees.truncatingRemainder(dividingBy: 360) != 0 {
+                log.info("will rotate \(degrees)")
+            }
         }
 
-        let renderer = UIGraphicsImageRenderer(size: target, format: pixelExactFormat())
-        return renderer.image { _ in
-            draw(in: CGRect(origin: .zero, size: target))
+        // Scale-only fast path.
+        if degrees.truncatingRemainder(dividingBy: 360) == 0 {
+            let renderer = UIGraphicsImageRenderer(size: scaledSize, format: pixelExactFormat())
+            return renderer.image { _ in
+                draw(in: CGRect(origin: .zero, size: scaledSize))
+            }
         }
-    }
 
-    func rotated(byDegrees degrees: CGFloat) -> UIImage {
-        if ImageCompressPlugin.showLog {
-            log.info("will rotate \(degrees)")
-        }
+        // Compose scale + rotate: renderer sized to the rotated bbox of the scaled image,
+        // then translate to center, rotate, flip Y (CG's origin is bottom-left), and draw
+        // the source cgImage into the scaled-size rect — CG resamples once during draw.
         let radians = degrees * .pi / 180
-        let rotatedSize = CGRect(origin: .zero, size: size)
+        let finalSize = CGRect(origin: .zero, size: scaledSize)
             .applying(CGAffineTransform(rotationAngle: radians))
             .integral
             .size
 
-        let renderer = UIGraphicsImageRenderer(size: rotatedSize, format: pixelExactFormat())
+        let renderer = UIGraphicsImageRenderer(size: finalSize, format: pixelExactFormat())
         return renderer.image { ctx in
             let cg = ctx.cgContext
-            cg.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
+            cg.translateBy(x: finalSize.width / 2, y: finalSize.height / 2)
             cg.rotate(by: radians)
             cg.scaleBy(x: 1, y: -1)
             if let cgImage = cgImage {
                 cg.draw(cgImage, in: CGRect(
-                    x: -size.width / 2,
-                    y: -size.height / 2,
-                    width: size.width,
-                    height: size.height
+                    x: -scaledSize.width / 2,
+                    y: -scaledSize.height / 2,
+                    width:  scaledSize.width,
+                    height: scaledSize.height
                 ))
             }
         }

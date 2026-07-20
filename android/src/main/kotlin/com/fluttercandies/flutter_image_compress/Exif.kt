@@ -22,11 +22,15 @@ internal data class Orientation(val degrees: Int, val flipHorizontal: Boolean) {
 internal object Exif {
     fun getOrientation(bytes: ByteArray): Orientation = runCatching {
         orientationOf(ExifInterface(ByteArrayInputStream(bytes)))
-    }.getOrDefault(Orientation.NONE)
+    }.onFailure { logRead(it) }.getOrDefault(Orientation.NONE)
 
     fun getOrientation(file: File): Orientation = runCatching {
         orientationOf(ExifInterface(file.absolutePath))
-    }.getOrDefault(Orientation.NONE)
+    }.onFailure { logRead(it) }.getOrDefault(Orientation.NONE)
+
+    private fun logRead(t: Throwable) {
+        if (ImageCompressPlugin.showLog) Log.w(LOG_TAG, "exif read failed, ignoring orientation", t)
+    }
 
     // Mapping (rotate CW first, then flip horizontally):
     //   2 FLIP_HORIZONTAL  = 0° + flip H

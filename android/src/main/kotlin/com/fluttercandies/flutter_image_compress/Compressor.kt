@@ -90,12 +90,15 @@ internal object Compressor {
         val destH = (h / scale).toInt()
         log("dst width = $destW")
         log("dst height = $destH")
-        val scaled = Bitmap.createScaledBitmap(bitmap, destW, destH, true).rotate(rotate, flipHorizontal)
+        val scaled = Bitmap.createScaledBitmap(bitmap, destW, destH, true)
+        if (scaled !== bitmap) bitmap.recycle()
+        val transformed = scaled.rotate(rotate, flipHorizontal)
+        if (transformed !== scaled) scaled.recycle()
         return if (format == CompressFormat.HEIC) {
-            encodeHeic(context, scaled, quality)
+            encodeHeic(context, transformed, quality)
         } else {
             val out = ByteArrayOutputStream()
-            scaled.compress(format.bitmapFormat!!, quality, out)
+            transformed.compress(format.bitmapFormat!!, quality, out)
             out.toByteArray()
         }
     }

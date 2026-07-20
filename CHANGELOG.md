@@ -1,3 +1,8 @@
+## 2.7.1
+
+- **Android**: internal — thread pool sized to `Runtime.availableProcessors()` (was hardcoded 8), source bitmap recycled after scale/rotate to lower peak memory, EXIF-read failures now logged under `showNativeLog`.
+- **iOS**: internal — combined scale + rotate into a single `UIGraphicsImageRenderer` pass. Drops the intermediate scaled bitmap when a rotation is also applied and resamples source pixels only once, which slightly improves interpolation quality.
+
 ## 2.7.0
 
 - **Breaking**: remove `autoCorrectionAngle`. Both platforms now unconditionally auto-orient from EXIF; the flag was Android-only (iOS's `UIImage` always auto-orients regardless), so setting it to `false` on iOS was a silent no-op. Callers on the default (`true`) are unaffected.

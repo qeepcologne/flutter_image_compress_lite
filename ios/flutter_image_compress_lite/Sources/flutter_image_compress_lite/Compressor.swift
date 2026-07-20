@@ -16,11 +16,11 @@ enum Compressor {
             log.info("minHeight = \(params.minHeight)")
             log.info("format = \(params.format.rawValue)")
         }
-        var img = image.scaled(toMinWidth: CGFloat(params.minWidth),
-                               minHeight: CGFloat(params.minHeight))
-        if params.rotate % 360 != 0 {
-            img = img.rotated(byDegrees: CGFloat(params.rotate))
-        }
+        let img = image.scaledAndRotated(
+            toMinWidth: CGFloat(params.minWidth),
+            minHeight: CGFloat(params.minHeight),
+            degrees: CGFloat(params.rotate)
+        )
         return data(from: img, quality: params.quality, format: params.format)
     }
 
