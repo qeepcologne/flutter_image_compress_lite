@@ -25,7 +25,11 @@ enum CompressFormat {
   heic,
 
   /// WebP — lossy, with alpha. Encoding is Android-only.
-  webp;
+  webp,
+
+  /// AVIF (AV1 in HEIF container) — lossy, with alpha. Encoding is Android-only
+  /// and needs API 34+ (Android 14) for the mandated MediaCodec AV1 encoder.
+  avif;
 }
 
 /// Image Compress plugin.
@@ -162,15 +166,20 @@ class FlutterImageCompress {
 /// native decoder and never need a check. Plugin only registers on
 /// Android+iOS, so the remaining runtime constraints are:
 ///   - HEIC encoding requires Android API 28+ (Android 9)
+///   - AVIF encoding requires Android API 34+ (Android 14)
 ///   - WebP encoding is not supported on iOS (decoding works)
+///   - AVIF encoding is not supported on iOS (Apple ships no AVIF encoder)
 Future<void> _checkSupportPlatform(CompressFormat format) async {
-  if (format == .webp && Platform.isIOS) {
-    throw UnsupportedError('WebP encoding is not supported on iOS');
+  if (Platform.isIOS) {
+    if (format == .webp) throw UnsupportedError('WebP encoding is not supported on iOS');
+    if (format == .avif) throw UnsupportedError('AVIF encoding is not supported on iOS');
+    return;
   }
-  if (format == .heic && Platform.isAndroid) {
+  if (format == .heic || format == .avif) {
+    final int minApi = format == .avif ? 34 : 28;
     final int version = (await FlutterImageCompress._channel.invokeMethod<int>('getSystemVersion'))!;
-    if (version < 28) {
-      throw UnsupportedError('HEIC encoding requires Android API 28+ (Android 9)');
+    if (version < minApi) {
+      throw UnsupportedError('${format.name.toUpperCase()} encoding requires Android API $minApi+');
     }
   }
 }

@@ -17,6 +17,8 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | HEIC / HEIF (Android) | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
 | WebP (iOS) | encode + decode (SDWebImage) | decode only (native) |
 | WebP (Android) | yes (native) | yes (native) |
+| AVIF (iOS) | decode only, iOS 16+ (native) | decode only, iOS 16+ (native) |
+| AVIF (Android) | decode only, API 31+ (native) | decode API 31+, **encode API 34+** (heifwriter) |
 | **Android** | | |
 | Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
 | keepExif | JPEG/PNG/WebP (androidx.exifinterface) | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+) |
@@ -36,7 +38,7 @@ Also fixes long-standing Android upstream bugs — most visibly JPEG gradient ba
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.7.2
+  flutter_image_compress_lite: ^2.8.0
 ```
 
 ```dart

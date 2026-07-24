@@ -73,7 +73,11 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
         }
 
         guard let image = UIImage(data: data) else {
-            return .failure(code: "BAD_IMAGE", message: "could not decode image")
+            let msg: String = switch request.source {
+                case .bytes: "could not decode image bytes"
+                case .file(let path): "could not decode image at \(path)"
+            }
+            return .failure(code: "BAD_IMAGE", message: msg)
         }
         guard let compressed = Compressor.encode(image: image, params: request.params) else {
             // Compressor.encode returns nil only on edge cases (missing cgImage, encoder
@@ -108,6 +112,7 @@ enum CompressFormat: Int, Sendable {
     case png = 1
     case heic = 2
     case webp = 3
+    case avif = 4
 }
 
 struct CompressParams: Sendable {

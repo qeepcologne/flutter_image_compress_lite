@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.os.Build
 import android.util.Log
+import androidx.heifwriter.AvifWriter
 import androidx.heifwriter.HeifWriter
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -19,14 +20,15 @@ internal class CompressException(val code: String, message: String?) : Exception
 
 /// Order must match the Dart `CompressFormat` enum so `index` is the wire value.
 ///
-/// `bitmapFormat` is null for HEIC, which goes through `androidx.heifwriter`
-/// instead of `Bitmap.compress()` (the platform `Bitmap.CompressFormat` enum
-/// has no HEIC entry at any API level).
+/// `bitmapFormat` is null for HEIC and AVIF, which go through `androidx.heifwriter`
+/// (`HeifWriter`/`AvifWriter`) instead of `Bitmap.compress()` — the platform
+/// `Bitmap.CompressFormat` enum has no HEIC/AVIF entry at any API level.
 enum class CompressFormat(val bitmapFormat: Bitmap.CompressFormat?) {
     JPEG(Bitmap.CompressFormat.JPEG),
     PNG(Bitmap.CompressFormat.PNG),
     HEIC(null),
-    WEBP(Bitmap.CompressFormat.WEBP);
+    WEBP(Bitmap.CompressFormat.WEBP),
+    AVIF(null);
 
     companion object {
         fun fromIndex(index: Int): CompressFormat? = entries.getOrNull(index)
@@ -97,19 +99,19 @@ internal object Compressor {
         val transformed = scaled.rotate(rotate, flipHorizontal)
         if (transformed !== scaled) scaled.recycle()
         return try {
-            if (format == CompressFormat.HEIC) {
-                encodeHeic(context, transformed, quality)
-            } else {
-                val out = ByteArrayOutputStream()
-                transformed.compress(format.bitmapFormat!!, quality, out)
-                out.toByteArray()
+            when (format) {
+                CompressFormat.HEIC -> encodeHeic(context, transformed, quality)
+                CompressFormat.AVIF -> encodeAvif(context, transformed, quality)
+                else -> ByteArrayOutputStream().also {
+                    transformed.compress(format.bitmapFormat!!, quality, it)
+                }.toByteArray()
             }
         } finally {
             transformed.recycle()
         }
     }
 
-    // HeifWriter only writes to a file path, so we round-trip through cacheDir.
+    // HeifWriter/AvifWriter only write to a file path, so we round-trip through cacheDir.
     private fun encodeHeic(context: Context, bitmap: Bitmap, quality: Int): ByteArray {
         val tmp = File.createTempFile("heic_", ".heic", context.cacheDir)
         try {
@@ -118,6 +120,28 @@ internal object Compressor {
                 bitmap.width,
                 bitmap.height,
                 HeifWriter.INPUT_MODE_BITMAP,
+            ).setQuality(quality).setMaxImages(1).build()
+            try {
+                writer.start()
+                writer.addBitmap(bitmap)
+                writer.stop(5000)
+            } finally {
+                writer.close()
+            }
+            return tmp.readBytes()
+        } finally {
+            tmp.delete()
+        }
+    }
+
+    private fun encodeAvif(context: Context, bitmap: Bitmap, quality: Int): ByteArray {
+        val tmp = File.createTempFile("avif_", ".avif", context.cacheDir)
+        try {
+            val writer = AvifWriter.Builder(
+                tmp.absolutePath,
+                bitmap.width,
+                bitmap.height,
+                AvifWriter.INPUT_MODE_BITMAP,
             ).setQuality(quality).setMaxImages(1).build()
             try {
                 writer.start()
@@ -151,15 +175,15 @@ internal object Compressor {
     }
 
     // Framework `ExifInterface.saveAttributes()` support was extended over time:
-    //   JPEG   always
-    //   PNG    API 30 (Android 11)
-    //   WebP   API 31 (Android 12)
-    //   HEIC   never
+    //   JPEG        always
+    //   PNG         API 30 (Android 11)
+    //   WebP        API 31 (Android 12)
+    //   HEIC/AVIF   never (HEIF-based containers; not in the writer's format list)
     private fun canWriteExif(format: CompressFormat): Boolean = when (format) {
         CompressFormat.JPEG -> true
         CompressFormat.PNG -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         CompressFormat.WEBP -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        CompressFormat.HEIC -> false
+        CompressFormat.HEIC, CompressFormat.AVIF -> false
     }
 
     private fun unsupportedExifMessage(format: CompressFormat): String = when (format) {
@@ -167,6 +191,7 @@ internal object Compressor {
         CompressFormat.PNG -> "keepExif=true ignored for PNG on API ${Build.VERSION.SDK_INT}: framework ExifInterface writer requires API 30+"
         CompressFormat.WEBP -> "keepExif=true ignored for WebP on API ${Build.VERSION.SDK_INT}: framework ExifInterface writer requires API 31+"
         CompressFormat.HEIC -> "keepExif=true ignored for HEIC output: no ExifInterface writer supports this format"
+        CompressFormat.AVIF -> "keepExif=true ignored for AVIF output: no ExifInterface writer supports this format"
     }
 
     private fun decodeOptions() = BitmapFactory.Options().apply {

@@ -1,3 +1,7 @@
+## 2.8.0
+
+- **New**: `CompressFormat.avif` output. Android-only (via `androidx.heifwriter.AvifWriter`, added in 1.1.0), requires API 34+ (Android 14) for the mandated MediaCodec AV1 encoder; older Android and iOS throw `UnsupportedError`. iOS has no public AVIF encoder — Apple ships decode only. AVIF *decoding* already works everywhere on capable devices without plugin changes (Android API 31+, iOS 16+).
+
 ## 2.7.2
 
 - **Android**: `keepExif=true` now works for PNG (API 30+ / Android 11) and WebP (API 31+ / Android 12) output, not just JPEG — framework `ExifInterface.saveAttributes()` gained those formats on those API levels. Combinations we can't honor (HEIC always, PNG/WebP on older devices) now log a `Log.w` explaining why rather than silently dropping EXIF. No new native deps.

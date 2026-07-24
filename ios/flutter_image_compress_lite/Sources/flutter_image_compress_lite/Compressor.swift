@@ -33,8 +33,8 @@ enum Compressor {
             return image.pngData()
         case .heic:
             return heifData(from: image, quality: q)
-        case .webp:
-            // WebP encoding is not supported on iOS; rejected upfront by the Dart validator.
+        case .webp, .avif:
+            // WebP and AVIF encoding are not supported on iOS; rejected upfront by the Dart validator.
             return nil
         }
     }
