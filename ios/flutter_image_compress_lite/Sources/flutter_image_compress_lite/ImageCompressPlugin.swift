@@ -87,7 +87,12 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
             return .bytes(output)
         }
         do {
-            try output.write(to: URL(fileURLWithPath: target), options: .atomic)
+            let url = URL(fileURLWithPath: target)
+            try? FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try output.write(to: url, options: .atomic)
             return .path(target)
         } catch {
             return .failure(code: "WRITE_FAILED", message: "\(error)")

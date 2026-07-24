@@ -102,7 +102,9 @@ class ImageCompressPlugin : FlutterPlugin, MethodCallHandler {
         val (w, h) = rotatedTarget(p.minWidth, p.minHeight, exif.degrees)
 
         try {
-            File(targetPath).outputStream().use { out ->
+            val target = File(targetPath)
+            target.parentFile?.mkdirs()
+            target.outputStream().use { out ->
                 Compressor.encodeFile(
                     context, p.format, path, out,
                     w, h, p.quality, p.rotate + exif.degrees,

@@ -8,7 +8,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 
 | | flutter_image_compress | flutter_image_compress_lite |
 |---|---|---|
-| Architecture | federated (3 packages) | standalone (1 package) |
+| Architecture | federated (6 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
 | Dart / Flutter | >=2.12 / >=2.0 | ^3.12 / >=3.44 |
 | **Image formats** | | |
@@ -19,15 +19,14 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | WebP (Android) | yes (native) | yes (native) |
 | **Android** | | |
 | Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
-| keepExif | androidx.exifinterface | **native android.media.ExifInterface** |
+| keepExif | JPEG/PNG/WebP (androidx.exifinterface) | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+) |
 | Language | Java + Kotlin | Kotlin |
 | minSdk / compileSdk | 21 / 34 | 24 / 37 |
 | AGP | 7.4+ (Groovy) | 9+ only (Kotlin) |
 | **iOS** | | |
-| Native deps | SDWebImage, SDWebImageWebPCoder, Mantle | **none** |
-| keepExif | Mantle / SYMetadata | **native ImageIO** |
+| Native deps | SDWebImage, SDWebImageWebPCoder | **none** |
 | Language | Objective-C | Swift 6.3 |
-| Packaging | CocoaPods | **SPM only** |
+| Packaging | CocoaPods + SPM | **SPM only** |
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 26.4.1+ |
 
@@ -37,7 +36,7 @@ Also fixes long-standing Android upstream bugs — most visibly JPEG gradient ba
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.7.1
+  flutter_image_compress_lite: ^2.7.2
 ```
 
 ```dart

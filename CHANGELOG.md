@@ -1,3 +1,9 @@
+## 2.7.2
+
+- **Android**: `keepExif=true` now works for PNG (API 30+ / Android 11) and WebP (API 31+ / Android 12) output, not just JPEG — framework `ExifInterface.saveAttributes()` gained those formats on those API levels. Combinations we can't honor (HEIC always, PNG/WebP on older devices) now log a `Log.w` explaining why rather than silently dropping EXIF. No new native deps.
+- **Android**: `HeifWriter.close()` moved into a `finally` block so a `HeifWriter` failure between `start` and `stop` no longer leaks the encoder; final transformed bitmap is now recycled after encode.
+- **Both**: `compressAndGetFile` `mkdirs` the target path's parent directory before writing, so callers don't have to pre-create it.
+
 ## 2.7.1
 
 - **Android**: internal — thread pool sized to `Runtime.availableProcessors()` (was hardcoded 8), source bitmap recycled after scale/rotate to lower peak memory, EXIF-read failures now logged under `showNativeLog`.

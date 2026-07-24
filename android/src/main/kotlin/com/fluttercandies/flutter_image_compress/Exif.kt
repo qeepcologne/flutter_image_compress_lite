@@ -53,14 +53,18 @@ internal object Exif {
 /// Copies every known EXIF attribute from an original image onto a
 /// re-encoded image (matches iOS behavior). Only `TAG_ORIENTATION` is
 /// skipped because pixels are already rotated during compression.
-/// JPEG-only — the framework `ExifInterface.saveAttributes()` supports
-/// no other output format.
+///
+/// Runtime format support depends on both the device's Android version
+/// and the output format, per framework `ExifInterface.saveAttributes()`:
+/// JPEG always; PNG on API 30+; WebP on API 31+. HEIC is never supported.
+/// `Compressor.writeOutput` gates on this before invoking us.
 internal class ExifKeeper private constructor(private val oldExif: ExifInterface) {
     constructor(filePath: String) : this(ExifInterface(filePath))
     constructor(buf: ByteArray) : this(ExifInterface(ByteArrayInputStream(buf)))
 
     fun writeToOutputStream(context: Context, encoded: ByteArrayOutputStream): ByteArrayOutputStream {
-        val file = File(context.cacheDir, "${UUID.randomUUID()}.jpg")
+        // Extension is arbitrary — ExifInterface sniffs the container from magic bytes.
+        val file = File(context.cacheDir, "${UUID.randomUUID()}.exif")
         return try {
             file.outputStream().use { it.write(encoded.toByteArray()) }
             ExifInterface(file.absolutePath).apply {

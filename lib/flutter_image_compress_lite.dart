@@ -46,9 +46,11 @@ enum CompressFormat {
 /// compound flip variants (`TRANSPOSE`, `TRANSVERSE`, `FLIP_HORIZONTAL`,
 /// `FLIP_VERTICAL`). Any `rotate` argument is applied on top.
 ///
-/// **`keepExif`** on Android preserves EXIF for JPEG output only; PNG,
-/// HEIC, and WebP silently drop EXIF. iOS preserves EXIF on all encoded
-/// formats it supports (JPEG, PNG, HEIC).
+/// **`keepExif`** on Android depends on the device's Android version,
+/// via framework `ExifInterface.saveAttributes()`: JPEG always, PNG on
+/// API 30+ (Android 11), WebP on API 31+ (Android 12), HEIC never.
+/// Unsupported (format, API) combinations log a warning and drop EXIF.
+/// iOS preserves EXIF on all encoded formats it supports (JPEG, PNG, HEIC).
 class FlutterImageCompress {
   FlutterImageCompress._();
 

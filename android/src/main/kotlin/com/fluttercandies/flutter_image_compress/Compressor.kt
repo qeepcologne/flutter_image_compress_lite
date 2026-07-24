@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.os.Build
+import android.util.Log
 import androidx.heifwriter.HeifWriter
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -94,12 +96,16 @@ internal object Compressor {
         if (scaled !== bitmap) bitmap.recycle()
         val transformed = scaled.rotate(rotate, flipHorizontal)
         if (transformed !== scaled) scaled.recycle()
-        return if (format == CompressFormat.HEIC) {
-            encodeHeic(context, transformed, quality)
-        } else {
-            val out = ByteArrayOutputStream()
-            transformed.compress(format.bitmapFormat!!, quality, out)
-            out.toByteArray()
+        return try {
+            if (format == CompressFormat.HEIC) {
+                encodeHeic(context, transformed, quality)
+            } else {
+                val out = ByteArrayOutputStream()
+                transformed.compress(format.bitmapFormat!!, quality, out)
+                out.toByteArray()
+            }
+        } finally {
+            transformed.recycle()
         }
     }
 
@@ -113,10 +119,13 @@ internal object Compressor {
                 bitmap.height,
                 HeifWriter.INPUT_MODE_BITMAP,
             ).setQuality(quality).setMaxImages(1).build()
-            writer.start()
-            writer.addBitmap(bitmap)
-            writer.stop(5000)
-            writer.close()
+            try {
+                writer.start()
+                writer.addBitmap(bitmap)
+                writer.stop(5000)
+            } finally {
+                writer.close()
+            }
             return tmp.readBytes()
         } finally {
             tmp.delete()
@@ -131,13 +140,33 @@ internal object Compressor {
         keepExif: Boolean,
         exifKeeper: () -> ExifKeeper,
     ) {
-        if (keepExif && format == CompressFormat.JPEG) {
+        if (keepExif && canWriteExif(format)) {
             val tmp = ByteArrayOutputStream()
             tmp.write(encoded)
             output.write(exifKeeper().writeToOutputStream(context, tmp).toByteArray())
         } else {
+            if (keepExif) Log.w(LOG_TAG, unsupportedExifMessage(format))
             output.write(encoded)
         }
+    }
+
+    // Framework `ExifInterface.saveAttributes()` support was extended over time:
+    //   JPEG   always
+    //   PNG    API 30 (Android 11)
+    //   WebP   API 31 (Android 12)
+    //   HEIC   never
+    private fun canWriteExif(format: CompressFormat): Boolean = when (format) {
+        CompressFormat.JPEG -> true
+        CompressFormat.PNG -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+        CompressFormat.WEBP -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        CompressFormat.HEIC -> false
+    }
+
+    private fun unsupportedExifMessage(format: CompressFormat): String = when (format) {
+        CompressFormat.JPEG -> "keepExif=true ignored (JPEG should be supported — please report)"
+        CompressFormat.PNG -> "keepExif=true ignored for PNG on API ${Build.VERSION.SDK_INT}: framework ExifInterface writer requires API 30+"
+        CompressFormat.WEBP -> "keepExif=true ignored for WebP on API ${Build.VERSION.SDK_INT}: framework ExifInterface writer requires API 31+"
+        CompressFormat.HEIC -> "keepExif=true ignored for HEIC output: no ExifInterface writer supports this format"
     }
 
     private fun decodeOptions() = BitmapFactory.Options().apply {
