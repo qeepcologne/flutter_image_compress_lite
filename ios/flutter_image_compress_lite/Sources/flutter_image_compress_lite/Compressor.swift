@@ -10,8 +10,8 @@ private let log = Logger(
 enum Compressor {
     static func encode(image: UIImage, params: CompressParams) -> Data? {
         if ImageCompressPlugin.showLog {
-            log.info("width = \(image.size.width)")
-            log.info("height = \(image.size.height)")
+            log.info("src width = \(image.size.width)")
+            log.info("src height = \(image.size.height)")
             log.info("minWidth = \(params.minWidth)")
             log.info("minHeight = \(params.minHeight)")
             log.info("format = \(params.format.rawValue)")

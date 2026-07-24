@@ -33,7 +33,7 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
         do {
             request = try Request(method: call.method, arguments: call.arguments)
         } catch {
-            result(FlutterError(code: "BAD_ARGS", message: nil, details: nil))
+            result(FlutterError(code: "BAD_ARGS", message: "malformed channel arguments", details: nil))
             return
         }
 
@@ -99,7 +99,7 @@ public final class ImageCompressPlugin: NSObject, FlutterPlugin {
             try output.write(to: url, options: .atomic)
             return .path(target)
         } catch {
-            return .failure(code: "WRITE_FAILED", message: "\(error)")
+            return .failure(code: "WRITE_FAILED", message: "could not write \(target): \(error.localizedDescription)")
         }
     }
 }

@@ -1,3 +1,8 @@
+## 2.8.1
+
+- **iOS error message parity with Android**: `BAD_ARGS` now carries a message (was `null`); `WRITE_FAILED` includes the target path.
+- **iOS debug log label parity with Android**: `"width/height"` → `"src width/src height"` (matches the `"dst width/dst height"` lines already emitted by both platforms).
+
 ## 2.8.0
 
 - **New**: `CompressFormat.avif` output. Android-only (via `androidx.heifwriter.AvifWriter`, added in 1.1.0), requires API 34+ (Android 14) for the mandated MediaCodec AV1 encoder; older Android and iOS throw `UnsupportedError`. iOS has no public AVIF encoder — Apple ships decode only. AVIF *decoding* already works everywhere on capable devices without plugin changes (Android API 31+, iOS 16+).

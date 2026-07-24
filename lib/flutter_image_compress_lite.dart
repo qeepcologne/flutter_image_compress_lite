@@ -22,14 +22,23 @@ enum CompressFormat {
   png,
 
   /// HEIC (HEVC in HEIF container) — lossy, with alpha. Android needs API 28+.
-  heic,
+  heic(androidMinApi: 28),
 
   /// WebP — lossy, with alpha. Encoding is Android-only.
-  webp,
+  webp(iosSupported: false),
 
   /// AVIF (AV1 in HEIF container) — lossy, with alpha. Encoding is Android-only
   /// and needs API 34+ (Android 14) for the mandated MediaCodec AV1 encoder.
-  avif;
+  avif(iosSupported: false, androidMinApi: 34);
+
+  const CompressFormat({this.iosSupported = true, this.androidMinApi});
+
+  /// `true` if this format's encoding is available on iOS.
+  final bool iosSupported;
+
+  /// Minimum Android API level for encoding this format. `null` = supported on
+  /// every API level the plugin targets (24+).
+  final int? androidMinApi;
 }
 
 /// Image Compress plugin.
@@ -163,20 +172,14 @@ class FlutterImageCompress {
 }
 
 /// Validates the *encoding* target — input formats are auto-detected by the
-/// native decoder and never need a check. Plugin only registers on
-/// Android+iOS, so the remaining runtime constraints are:
-///   - HEIC encoding requires Android API 28+ (Android 9)
-///   - AVIF encoding requires Android API 34+ (Android 14)
-///   - WebP encoding is not supported on iOS (decoding works)
-///   - AVIF encoding is not supported on iOS (Apple ships no AVIF encoder)
+/// native decoder and never need a check. Constraints (encoded per format on
+/// [CompressFormat]): iOS-support flag and, for Android, a minimum SDK level.
 Future<void> _checkSupportPlatform(CompressFormat format) async {
-  if (Platform.isIOS) {
-    if (format == .webp) throw UnsupportedError('WebP encoding is not supported on iOS');
-    if (format == .avif) throw UnsupportedError('AVIF encoding is not supported on iOS');
-    return;
+  if (Platform.isIOS && !format.iosSupported) {
+    throw UnsupportedError('${format.name.toUpperCase()} encoding is not supported on iOS');
   }
-  if (format == .heic || format == .avif) {
-    final int minApi = format == .avif ? 34 : 28;
+  final int? minApi = format.androidMinApi;
+  if (Platform.isAndroid && minApi != null) {
     final int version = (await FlutterImageCompress._channel.invokeMethod<int>('getSystemVersion'))!;
     if (version < minApi) {
       throw UnsupportedError('${format.name.toUpperCase()} encoding requires Android API $minApi+');

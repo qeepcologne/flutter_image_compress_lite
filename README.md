@@ -38,7 +38,7 @@ Also fixes long-standing Android upstream bugs — most visibly JPEG gradient ba
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.8.0
+  flutter_image_compress_lite: ^2.8.1
 ```
 
 ```dart
