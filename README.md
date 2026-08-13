@@ -10,7 +10,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 |---|---|---|
 | Architecture | federated (6 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
-| Dart / Flutter | >=2.12 / >=2.0 | ^3.12 / >=3.44 |
+| Dart / Flutter | >=2.12 / >=2.0 | ^3.13 / >=3.47 |
 | **Image formats** | | |
 | JPEG / PNG | yes | yes |
 | HEIC / HEIF (iOS) | yes | yes |
@@ -38,7 +38,7 @@ Also fixes long-standing Android upstream bugs — most visibly JPEG gradient ba
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.8.1
+  flutter_image_compress_lite: ^2.9.0
 ```
 
 ```dart

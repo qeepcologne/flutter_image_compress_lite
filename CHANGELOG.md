@@ -1,3 +1,8 @@
+## 2.9.0
+
+- Requires **Dart 3.13 / Flutter 3.47** (`sdk: ^3.13.0`, `flutter: >=3.47.0`) — the toolchain this package is now built and tested against.
+- Removed `android/gradle/wrapper/` — the plugin has no `gradlew` and no example app, and is built by the consuming app's wrapper, so the file was never read.
+
 ## 2.8.1
 
 - **iOS error message parity with Android**: `BAD_ARGS` now carries a message (was `null`); `WRITE_FAILED` includes the target path.
