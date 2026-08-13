@@ -33,6 +33,15 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 26.4.1+ |
 
+### Size
+
+Dropping the pods is worth **~0.7 MB** on a release iOS app bundle. On **Android there is no difference** — neither
+version ships native libraries there, and R8 strips upstream's extra `commons-io` / `exifinterface` code.
+
+Don't derive the saving from the raw dependency sizes: SDWebImage, SDWebImageWebPCoder and Mantle are far larger than
+0.7 MB as sources, but dead-code stripping, obfuscation, resource shrinking and App Store compression absorb most of
+that before it reaches a bundle.
+
 ### Android host-app requirement
 
 The plugin sets no `compileOptions` / `jvmTarget` of its own — the host app decides one JVM target for every module.
