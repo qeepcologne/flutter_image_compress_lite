@@ -21,7 +21,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | AVIF (Android) | decode only, API 31+ (native) | decode API 31+, **encode API 34+** (heifwriter) |
 | **Android** | | |
 | Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.1.0 only** |
-| keepExif | JPEG/PNG/WebP (androidx.exifinterface); copies a curated allow-list of ~92 tags | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+); copies every tag the framework knows minus source-only ones, so ~30 more survive — XMP, MakerNote, ISO, aperture, subject/scene, focal-plane and colorimetry tags |
+| keepExif | JPEG/PNG/WebP (androidx.exifinterface); allow-list of ~92 tags | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+); every tag the framework knows minus source-only ones, so ~30 more survive |
 | Language | Java + Kotlin | Kotlin |
 | minSdk / compileSdk | 21 / 34 | 24 / 37 |
 | AGP | 7.4+ (Groovy), guards `kotlin-android` on AGP 9 | 9+ only (Kotlin) |
