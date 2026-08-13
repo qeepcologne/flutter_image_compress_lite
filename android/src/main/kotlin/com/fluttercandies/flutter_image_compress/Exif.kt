@@ -51,8 +51,8 @@ internal object Exif {
 }
 
 /// Copies every known EXIF attribute from an original image onto a
-/// re-encoded image (matches iOS behavior). Only `TAG_ORIENTATION` is
-/// skipped because pixels are already rotated during compression.
+/// re-encoded image (matches iOS behavior), minus the tags that describe the
+/// *source* file rather than the picture — see [SKIPPED_TAGS].
 ///
 /// Runtime format support depends on both the device's Android version
 /// and the output format, per framework `ExifInterface.saveAttributes()`:
@@ -69,7 +69,7 @@ internal class ExifKeeper private constructor(private val oldExif: ExifInterface
             file.outputStream().use { it.write(encoded.toByteArray()) }
             ExifInterface(file.absolutePath).apply {
                 for (name in ALL_TAG_NAMES) {
-                    if (name == ExifInterface.TAG_ORIENTATION) continue
+                    if (name in SKIPPED_TAGS) continue
                     oldExif.getAttribute(name)?.let { setAttribute(name, it) }
                 }
                 saveAttributes()
@@ -86,6 +86,52 @@ internal class ExifKeeper private constructor(private val oldExif: ExifInterface
     }
 
     private companion object {
+        /// Tags that describe the source *file* — its pixel buffer, its encoding structure, or offsets into its
+        /// bytes — none of which survive a scale and re-encode. Copying them writes claims that contradict the
+        /// output: stale dimensions, a colour space the new bytes are not in, and thumbnail/strip offsets pointing
+        /// into a file that no longer exists. `TAG_ORIENTATION` is skipped because the pixels were already rotated.
+        /// Mirrors the source-only key list in `ExifKeeper.swift`.
+        private val SKIPPED_TAGS: Set<String> = setOf(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.TAG_THUMBNAIL_ORIENTATION,
+            // dimensions
+            ExifInterface.TAG_IMAGE_WIDTH,
+            ExifInterface.TAG_IMAGE_LENGTH,
+            ExifInterface.TAG_PIXEL_X_DIMENSION,
+            ExifInterface.TAG_PIXEL_Y_DIMENSION,
+            ExifInterface.TAG_DEFAULT_CROP_SIZE,
+            // pixel-buffer / colour description
+            ExifInterface.TAG_BITS_PER_SAMPLE,
+            ExifInterface.TAG_COLOR_SPACE,
+            ExifInterface.TAG_COMPRESSION,
+            ExifInterface.TAG_PHOTOMETRIC_INTERPRETATION,
+            ExifInterface.TAG_SAMPLES_PER_PIXEL,
+            ExifInterface.TAG_PLANAR_CONFIGURATION,
+            ExifInterface.TAG_Y_CB_CR_SUB_SAMPLING,
+            ExifInterface.TAG_Y_CB_CR_POSITIONING,
+            // offsets into the source bytes
+            ExifInterface.TAG_ROWS_PER_STRIP,
+            ExifInterface.TAG_STRIP_OFFSETS,
+            ExifInterface.TAG_STRIP_BYTE_COUNTS,
+            ExifInterface.TAG_JPEG_INTERCHANGE_FORMAT,
+            ExifInterface.TAG_JPEG_INTERCHANGE_FORMAT_LENGTH,
+            ExifInterface.TAG_THUMBNAIL_IMAGE_WIDTH,
+            ExifInterface.TAG_THUMBNAIL_IMAGE_LENGTH,
+            ExifInterface.TAG_SUBFILE_TYPE,
+            ExifInterface.TAG_NEW_SUBFILE_TYPE,
+            // raw-container structure, meaningless in a JPEG/PNG/WebP output
+            ExifInterface.TAG_DNG_VERSION,
+            ExifInterface.TAG_ORF_ASPECT_FRAME,
+            ExifInterface.TAG_ORF_PREVIEW_IMAGE_START,
+            ExifInterface.TAG_ORF_PREVIEW_IMAGE_LENGTH,
+            ExifInterface.TAG_ORF_THUMBNAIL_IMAGE,
+            ExifInterface.TAG_RW2_JPG_FROM_RAW,
+            ExifInterface.TAG_RW2_SENSOR_TOP_BORDER,
+            ExifInterface.TAG_RW2_SENSOR_LEFT_BORDER,
+            ExifInterface.TAG_RW2_SENSOR_BOTTOM_BORDER,
+            ExifInterface.TAG_RW2_SENSOR_RIGHT_BORDER,
+        )
+
         // Enumerate every `ExifInterface.TAG_*` String constant reflectively so the copy
         // matches iOS's "pass the whole property dict through" behavior (see ExifKeeper.swift).
         // Framework `android.media.ExifInterface` is platform code and not obfuscated on

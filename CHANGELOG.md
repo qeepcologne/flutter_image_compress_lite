@@ -1,3 +1,9 @@
+## 2.9.1
+
+- **Android**: `keepExif: true` skips the same class of tags — dimensions (`ImageWidth`/`ImageLength`/`PixelXDimension`/`PixelYDimension`/`DefaultCropSize`), pixel-buffer and colour description (`BitsPerSample`, `ColorSpace`, `Compression`, `PhotometricInterpretation`, `SamplesPerPixel`, `PlanarConfiguration`, `YCbCrSubSampling`, `YCbCrPositioning`), and offsets into the source bytes (`StripOffsets`, `StripByteCounts`, `RowsPerStrip`, `JPEGInterchangeFormat[Length]`, thumbnail width/length, sub-file type, and the ORF/DNG raw-container tags). Previously every tag but `Orientation` was copied, so a scaled output carried the original's dimensions and thumbnail offsets into a file that no longer had them.
+- **iOS**: `keepExif: true` no longer copies metadata that describes the *source* pixel buffer into the re-encoded output — `PixelWidth`/`PixelHeight`/`FileSize`, `ProfileName`, `ColorModel`, `Depth`, `HasAlpha`, `IsFloat`, `IsIndexed` and the EXIF `PixelXDimension`/`PixelYDimension` are dropped, and `TIFF.Orientation` is reset alongside the top-level one. A Display-P3 source wrote its profile name into an sRGB JPEG (wrong colors in color-managed viewers), a transparent PNG source wrote `HasAlpha` into a JPEG, and a viewer preferring the TIFF orientation tag rotated the image a second time. Matches upstream 2.5.0; no new dependencies (ImageIO only).
+- Documented the Android host-app JVM-target requirement in the README (`android.builtInKotlin=true`, or set the target for all modules from the root build file) — the plugin deliberately carries no `compileOptions`/`jvmTarget` of its own.
+
 ## 2.9.0
 
 - Requires **Dart 3.13 / Flutter 3.47** (`sdk: ^3.13.0`, `flutter: >=3.47.0`) — the toolchain this package is now built and tested against.

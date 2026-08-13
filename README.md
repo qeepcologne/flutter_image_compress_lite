@@ -20,17 +20,38 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | AVIF (iOS) | decode only, iOS 16+ (native) | decode only, iOS 16+ (native) |
 | AVIF (Android) | decode only, API 31+ (native) | decode API 31+, **encode API 34+** (heifwriter) |
 | **Android** | | |
-| Native deps | exifinterface, heifwriter, commons-io | **heifwriter only** |
-| keepExif | JPEG/PNG/WebP (androidx.exifinterface) | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+) |
+| Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.1.0 only** |
+| keepExif | JPEG/PNG/WebP (androidx.exifinterface); copies a curated allow-list of ~92 tags | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+); copies every tag the framework knows minus source-only ones, so ~30 more survive — XMP, MakerNote, ISO, aperture, subject/scene, focal-plane and colorimetry tags |
 | Language | Java + Kotlin | Kotlin |
 | minSdk / compileSdk | 21 / 34 | 24 / 37 |
-| AGP | 7.4+ (Groovy) | 9+ only (Kotlin) |
+| AGP | 7.4+ (Groovy), guards `kotlin-android` on AGP 9 | 9+ only (Kotlin) |
 | **iOS** | | |
 | Native deps | SDWebImage, SDWebImageWebPCoder | **none** |
+| keepExif | full source metadata via ImageIO passthrough, source-only keys stripped | same |
 | Language | Objective-C | Swift 6.3 |
 | Packaging | CocoaPods + SPM | **SPM only** |
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 26.4.1+ |
+
+### Android host-app requirement
+
+The plugin sets no `compileOptions` / `jvmTarget` of its own — the host app decides one JVM target for every module.
+Either enable AGP 9's built-in Kotlin (`android.builtInKotlin=true`, where Kotlin's target defaults to
+`compileOptions.targetCompatibility`), or apply the target to all modules from the root build file, e.g.
+
+```kotlin
+subprojects {
+    afterEvaluate {
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            compilerOptions.jvmTarget = JvmTarget.fromTarget(<your java version>)
+        }
+    }
+}
+```
+
+Without either, KGP compiles the module against the running JDK while javac uses AGP's default and the build fails with
+*"Inconsistent JVM-target compatibility between Java and Kotlin tasks"*. Note Flutter's app template writes
+`android.builtInKotlin=false`, so a stock app needs the root-level target.
 
 Also fixes long-standing Android upstream bugs — most visibly JPEG gradient banding on decode and EXIF-orientation flip variants that came out mirrored — see the [CHANGELOG](CHANGELOG.md) for the full list.
 
