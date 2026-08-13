@@ -1,3 +1,7 @@
+## 2.9.2
+
+- **iOS**: fix a Swift 6 strict-concurrency error introduced in 2.9.1 — `ExifKeeper.sourceOnlyKeys` was a stored `static let` of `[CFString]`, which is not `Sendable` (*"Static property 'sourceOnlyKeys' is not concurrency-safe"*), so the package did not compile under `swiftLanguageMode: .v6`. It is a computed property now, with no static storage.
+
 ## 2.9.1
 
 - **Android**: `keepExif: true` skips the same class of tags — dimensions (`ImageWidth`/`ImageLength`/`PixelXDimension`/`PixelYDimension`/`DefaultCropSize`), pixel-buffer and colour description (`BitsPerSample`, `ColorSpace`, `Compression`, `PhotometricInterpretation`, `SamplesPerPixel`, `PlanarConfiguration`, `YCbCrSubSampling`, `YCbCrPositioning`), and offsets into the source bytes (`StripOffsets`, `StripByteCounts`, `RowsPerStrip`, `JPEGInterchangeFormat[Length]`, thumbnail width/length, sub-file type, and the ORF/DNG raw-container tags). Previously every tag but `Orientation` was copied, so a scaled output carried the original's dimensions and thumbnail offsets into a file that no longer had them.

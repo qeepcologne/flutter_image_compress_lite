@@ -20,7 +20,7 @@ enum ExifKeeper {
     /// re-encodes, so carrying them over writes claims that contradict the output: a Display-P3 `ProfileName` on an
     /// sRGB JPEG makes color-managed viewers apply the wrong transform, `HasAlpha` from a transparent PNG contradicts
     /// a JPEG that has no alpha channel, and the pixel dimensions are simply stale.
-    private static let sourceOnlyKeys: [CFString] = [
+    private static var sourceOnlyKeys: [CFString] {[
         kCGImagePropertyPixelWidth,
         kCGImagePropertyPixelHeight,
         kCGImagePropertyFileSize,
@@ -30,7 +30,7 @@ enum ExifKeeper {
         kCGImagePropertyHasAlpha,
         kCGImagePropertyIsFloat,
         kCGImagePropertyIsIndexed,
-    ]
+    ]}
 
     private static func exif(from source: CGImageSource) -> [CFString: Any]? {
         guard let props = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
