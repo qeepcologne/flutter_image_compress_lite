@@ -46,11 +46,22 @@ enum Compressor {
         let options: [CIImageRepresentationOption: Any] = [
             CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String): quality
         ]
-        return context.heifRepresentation(
+        // Fall back to sRGB, not DeviceRGB: a device space carries no profile, so the HEIC would be written
+        // with pixel values no viewer can interpret. Matches upstream #358 and the sRGB the renderer produces.
+        let colorSpace = ciImage.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
+        let data = context.heifRepresentation(
             of: ciImage,
             format: .ARGB8,
-            colorSpace: ciImage.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
+            colorSpace: colorSpace,
             options: options
         )
+        // The data-returning API carries no error out-param, and the reason is only available from the
+        // file-based writeHEIFRepresentation(of:to:…) — which would mean writing and re-reading a tmp file
+        // just for a debug log. So record *that* the encode failed, not why. The caller turns nil into a
+        // COMPRESS_ERROR on the channel either way.
+        if data == nil, ImageCompressPlugin.showLog {
+            log.warning("heic encoding returned no data")
+        }
+        return data
     }
 }
