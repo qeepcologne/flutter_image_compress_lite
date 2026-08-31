@@ -22,6 +22,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | **Android** | | |
 | Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.1.0 only** |
 | keepExif | JPEG/PNG/WebP (androidx.exifinterface); allow-list of ~92 tags | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+); every tag the framework knows minus source-only ones, so ~30 more survive |
+| Color management | wide-gamut source decoded into its own color space, output not reliably tagged ([#407](https://github.com/fluttercandies/flutter_image_compress/pull/407) open) | wide-gamut source color-managed to sRGB at decode time (API 26+) |
 | Language | Java + Kotlin | Kotlin |
 | minSdk / compileSdk | 21 / 34 | 24 / 37 |
 | AGP | 7.4+ (Groovy), guards `kotlin-android` on AGP 9 | 9+ only (Kotlin) |

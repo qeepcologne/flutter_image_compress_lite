@@ -6,14 +6,18 @@ private let log = Logger(
     category: "scale"
 )
 
-// UIGraphicsImageRendererFormat.default() picks up the main screen's scale (2× or 3× on real
-// devices), so a renderer built from it produces a `size × scale` PIXEL bitmap even though
-// `draw(in:)` operates in points. For our use that means encoding 4–9× more pixels than the
-// caller asked for, and the JPEG/PNG byte size blows up correspondingly. Force scale = 1 so
-// pixels == points and the produced UIImage matches the requested dimensions exactly.
+// UIGraphicsImageRendererFormat.default() picks up the main screen's traits, and two of them are
+// wrong for an encoder:
+//   - scale is the screen's (2× or 3× on real devices), so a renderer built from it produces a
+//     `size × scale` PIXEL bitmap even though `draw(in:)` operates in points — encoding 4–9× more
+//     pixels than the caller asked for, with the JPEG/PNG byte size blowing up correspondingly.
+//   - preferredRange is .automatic, which renders in extended range on a wide-gamut device, so a
+//     Display P3 source stays wide-gamut and a non-color-managed viewer shows it oversaturated.
+// Pin both: scale = 1 makes pixels == points, .standard keeps the output sRGB.
 private func pixelExactFormat() -> UIGraphicsImageRendererFormat {
     let f = UIGraphicsImageRendererFormat.default()
     f.scale = 1
+    f.preferredRange = .standard
     return f
 }
 

@@ -3,6 +3,7 @@ package com.fluttercandies.flutter_image_compress
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ColorSpace
 import android.graphics.Matrix
 import android.os.Build
 import android.util.Log
@@ -180,8 +181,14 @@ internal object Compressor {
         }
     }
 
+    // BitmapFactory decodes a wide-gamut source (Display P3, Adobe RGB) into that same color space, and neither
+    // Bitmap.compress() nor the HeifWriter/AvifWriter path tags the output with a matching ICC profile reliably. A
+    // non-color-managed viewer then reads those pixel values as sRGB and shows them oversaturated. Color-manage the
+    // decode down to sRGB instead, so the output is self-describing whatever the encoder does. inPreferredColorSpace
+    // is API 26+; below that the platform has no color management to begin with.
     private fun decodeOptions() = BitmapFactory.Options().apply {
         inPreferredConfig = Bitmap.Config.ARGB_8888
+        if (Build.VERSION.SDK_INT >= 26) inPreferredColorSpace = ColorSpace.get(ColorSpace.Named.SRGB)
     }
 }
 

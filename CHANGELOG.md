@@ -1,3 +1,8 @@
+## 2.9.3
+
+- **Android**: wide-gamut sources are color-managed to sRGB at decode time (`inPreferredColorSpace`, API 26+). `BitmapFactory` kept a Display-P3 or Adobe-RGB source in its own color space and neither `Bitmap.compress()` nor the `HeifWriter`/`AvifWriter` path tagged the output with a matching ICC profile reliably, so a non-color-managed viewer read those pixels as sRGB and showed the result oversaturated — most visible with photos from devices that shoot Display P3 by default. Same fix as upstream [#407](https://github.com/fluttercandies/flutter_image_compress/pull/407), applied at our single decode-options helper instead of three call sites.
+- **iOS**: the render format now pins `preferredRange = .standard`, so scaling and rotating no longer produce an extended-range bitmap on a wide-gamut device — the same oversaturation as above, and the sRGB output that `keepExif`'s dropped `ProfileName` (2.9.1) already assumed. Matches upstream [#335](https://github.com/fluttercandies/flutter_image_compress/pull/335).
+
 ## 2.9.2
 
 - **iOS**: fix a Swift 6 strict-concurrency error introduced in 2.9.1 — `ExifKeeper.sourceOnlyKeys` was a stored `static let` of `[CFString]`, which is not `Sendable` (*"Static property 'sourceOnlyKeys' is not concurrency-safe"*), so the package did not compile under `swiftLanguageMode: .v6`. It is a computed property now, with no static storage.
