@@ -29,10 +29,10 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | **iOS** | | |
 | Native deps | SDWebImage, SDWebImageWebPCoder | **none** |
 | keepExif | full source metadata via ImageIO passthrough, source-only keys stripped | same |
-| Language | Objective-C | Swift 6.3 |
+| Language | Objective-C | Swift 6.4 |
 | Packaging | CocoaPods + SPM | **SPM only** |
 | Deployment target | 9.0 | 15.0 |
-| Xcode (to build) | any | 26.4.1+ |
+| Xcode (to build) | any | 27.0+ |
 
 ### Size
 

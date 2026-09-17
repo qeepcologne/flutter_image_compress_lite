@@ -1,3 +1,8 @@
+## 2.9.4
+
+- **iOS**: Xcode floor raised to **27.0** (Swift 6.4 toolchain). `Package.swift` declares `swift-tools-version: 6.4`; no code change. Runtime floor unchanged — still **iOS 15+**, which is also Xcode 27's own minimum deployment target.
+- `cross_file` constraint bumped to `^0.3.5+5`.
+
 ## 2.9.3
 
 - **Android**: wide-gamut sources are color-managed to sRGB at decode time (`inPreferredColorSpace`, API 26+). `BitmapFactory` kept a Display-P3 or Adobe-RGB source in its own color space and neither `Bitmap.compress()` nor the `HeifWriter`/`AvifWriter` path tagged the output with a matching ICC profile reliably, so a non-color-managed viewer read those pixels as sRGB and showed the result oversaturated — most visible with photos from devices that shoot Display P3 by default. Same fix as upstream [#407](https://github.com/fluttercandies/flutter_image_compress/pull/407), applied at our single decode-options helper instead of three call sites.
