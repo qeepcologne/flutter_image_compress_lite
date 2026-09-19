@@ -1,3 +1,7 @@
+## Unreleased
+
+- **Android**: `encodeFile`/`encodeBytes` now read the source image's bounds (`BitmapFactory.Options.inJustDecodeBounds`) and pick the largest power-of-two `inSampleSize` that still decodes at least as large as the final `minWidth`/`minHeight`-derived output size, instead of always decoding the full-resolution source into `ARGB_8888` before `compress()` scales it down. A 12 MP photo previously decoded to ~48 MB regardless of how small `minWidth`/`minHeight` were — this is what Android vitals flags as "use bitmap downsampling". Output *dimensions* are unchanged, verified across a matrix of source sizes/aspects and compression-ladder ends; the decoded bitmap is never smaller than `compress()`'s scale target. JPEG sources are downsampled by the decoder itself and PNG/GIF by pixel skipping, so fine detail (e.g. thin lines in a screenshot) can differ slightly from the un-sampled path, and output byte size varied by up to ~11% across that same test matrix.
+
 ## 2.9.4
 
 - **iOS**: Xcode floor raised to **27.0** (Swift 6.4 toolchain). `Package.swift` declares `swift-tools-version: 6.4`; no code change. Runtime floor unchanged — still **iOS 15+**, which is also Xcode 27's own minimum deployment target.
