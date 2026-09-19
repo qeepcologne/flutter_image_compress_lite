@@ -69,9 +69,13 @@ internal object Compressor {
         flipHorizontal: Boolean,
         keepExif: Boolean,
     ) {
-        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions())
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+        val plan = planDecode(bounds.outWidth, bounds.outHeight, minWidth, minHeight)
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOptions(plan.sampleSize))
             ?: throw CompressException("BAD_IMAGE", "could not decode image bytes")
-        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate, flipHorizontal)
+        val (destW, destH) = plan.target ?: targetSize(bitmap.width, bitmap.height, minWidth, minHeight)
+        val encoded = compress(context, bitmap, format, destW, destH, quality, rotate, flipHorizontal)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(bytes) }
     }
 
@@ -88,30 +92,37 @@ internal object Compressor {
         keepExif: Boolean,
     ) {
         if (!File(path).exists()) throw CompressException("FILE_NOT_FOUND", "could not read $path")
-        val bitmap = BitmapFactory.decodeFile(path, decodeOptions())
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(path, bounds)
+        val plan = planDecode(bounds.outWidth, bounds.outHeight, minWidth, minHeight)
+        val bitmap = BitmapFactory.decodeFile(path, decodeOptions(plan.sampleSize))
             ?: throw CompressException("BAD_IMAGE", "could not decode image at $path")
-        val encoded = compress(context, bitmap, format, minWidth, minHeight, quality, rotate, flipHorizontal)
+        val (destW, destH) = plan.target ?: targetSize(bitmap.width, bitmap.height, minWidth, minHeight)
+        val encoded = compress(context, bitmap, format, destW, destH, quality, rotate, flipHorizontal)
         writeOutput(output, encoded, context, format, keepExif) { ExifKeeper(path) }
     }
 
+    // [destW]/[destH] are already the final output size — normally computed by [targetSize] from
+    // the *original*, pre-sampling image bounds (see [planDecode]/encodeFile/encodeBytes), or from
+    // `bitmap`'s own dimensions when the bounds-only decode couldn't read them. We deliberately do
+    // not recompute the scale from `bitmap` in the common case: BitmapFactory's inSampleSize decode
+    // only guarantees the result is *approximately* width/sampleSize (codecs round to whatever
+    // block size they decode natively), so re-deriving destW/destH from the sampled bitmap could
+    // drift by a pixel or two from what this same source would have produced before the sampled
+    // decode was introduced. Scaling straight to the pre-computed target keeps output dimensions
+    // identical to the un-sampled path.
     private fun compress(
         context: Context,
         bitmap: Bitmap,
         format: CompressFormat,
-        minWidth: Int,
-        minHeight: Int,
+        destW: Int,
+        destH: Int,
         quality: Int,
         rotate: Int,
         flipHorizontal: Boolean,
     ): ByteArray {
-        val w = bitmap.width.toFloat()
-        val h = bitmap.height.toFloat()
-        log("src width = $w")
-        log("src height = $h")
-        val scale = bitmap.calcScale(minWidth, minHeight)
-        log("scale = $scale")
-        val destW = (w / scale).toInt()
-        val destH = (h / scale).toInt()
+        log("decoded width = ${bitmap.width}")
+        log("decoded height = ${bitmap.height}")
         log("dst width = $destW")
         log("dst height = $destH")
         val scaled = Bitmap.createScaledBitmap(bitmap, destW, destH, true)
@@ -186,9 +197,63 @@ internal object Compressor {
     // non-color-managed viewer then reads those pixel values as sRGB and shows them oversaturated. Color-manage the
     // decode down to sRGB instead, so the output is self-describing whatever the encoder does. inPreferredColorSpace
     // is API 26+; below that the platform has no color management to begin with.
-    private fun decodeOptions() = BitmapFactory.Options().apply {
+    //
+    // [sampleSize] skips decoding pixel data this call would immediately throw away in `compress()`'s
+    // createScaledBitmap step. A full-resolution photo (e.g. 12 MP) decoded straight to ARGB_8888 is ~48 MB before
+    // any resize; calcInSampleSize keeps the sampled decode at least as large as the final output size.
+    private fun decodeOptions(sampleSize: Int) = BitmapFactory.Options().apply {
         inPreferredConfig = Bitmap.Config.ARGB_8888
         if (Build.VERSION.SDK_INT >= 26) inPreferredColorSpace = ColorSpace.get(ColorSpace.Named.SRGB)
+        inSampleSize = sampleSize
+    }
+
+    // Same formula `Bitmap.calcScale` used before this file started decoding at a downsampled size — kept as a
+    // free function so it can run against the *bounds-only* decode (BitmapFactory.Options.outWidth/outHeight)
+    // before any pixel data is read, instead of against a fully decoded Bitmap.
+    private fun calcScale(width: Int, height: Int, minWidth: Int, minHeight: Int): Float {
+        val scaleW = width.toFloat() / minWidth.toFloat()
+        val scaleH = height.toFloat() / minHeight.toFloat()
+        log("width scale = $scaleW")
+        log("height scale = $scaleH")
+        return max(1f, min(scaleW, scaleH))
+    }
+
+    // The output size `compress()` will scale to, derived from the *original* (pre-sampling) image
+    // dimensions so it is identical regardless of what inSampleSize calcInSampleSize later picks.
+    private fun targetSize(width: Int, height: Int, minWidth: Int, minHeight: Int): Pair<Int, Int> {
+        val scale = calcScale(width, height, minWidth, minHeight)
+        log("scale = $scale")
+        return (width / scale).toInt() to (height / scale).toInt()
+    }
+
+    // Largest power-of-two BitmapFactory.Options.inSampleSize that still decodes a bitmap at least as
+    // large as [targetWidth]x[targetHeight] on both axes — i.e. the smallest decode that loses no detail
+    // the final createScaledBitmap call in `compress()` wouldn't have discarded anyway. BitmapFactory only
+    // honors powers of two (any other value is rounded down), hence the doubling loop instead of a division.
+    // A zero/negative target (e.g. minWidth=minHeight=0) would otherwise leave the loop condition true
+    // forever — origWidth/(sampleSize*2) can't drop below a target of 0 — until sampleSize overflows Int
+    // and the next iteration divides by zero.
+    private fun calcInSampleSize(origWidth: Int, origHeight: Int, targetWidth: Int, targetHeight: Int): Int {
+        if (origWidth <= 0 || origHeight <= 0 || targetWidth <= 0 || targetHeight <= 0) return 1
+        var sampleSize = 1
+        while (origWidth / (sampleSize * 2) >= targetWidth && origHeight / (sampleSize * 2) >= targetHeight) {
+            sampleSize *= 2
+        }
+        return sampleSize
+    }
+
+    // Bounds-only decodes (see encodeFile/encodeBytes) can fail to report dimensions —
+    // BitmapFactory.Options.outWidth/outHeight come back <= 0 — for some malformed or unusual
+    // sources even though the real decode right after still succeeds. There's nothing to compute a
+    // sample size or target from in that case, so [target] is null and the caller falls back to
+    // decoding at full resolution ([sampleSize] = 1) and deriving the target from the decoded
+    // bitmap's own dimensions instead, matching this file's behavior before it started sampling.
+    private class DecodePlan(val sampleSize: Int, val target: Pair<Int, Int>?)
+
+    private fun planDecode(boundsWidth: Int, boundsHeight: Int, minWidth: Int, minHeight: Int): DecodePlan {
+        if (boundsWidth <= 0 || boundsHeight <= 0) return DecodePlan(1, null)
+        val target = targetSize(boundsWidth, boundsHeight, minWidth, minHeight)
+        return DecodePlan(calcInSampleSize(boundsWidth, boundsHeight, target.first, target.second), target)
     }
 }
 
@@ -199,12 +264,4 @@ private fun Bitmap.rotate(degrees: Int, flipHorizontal: Boolean): Bitmap {
         if (flipHorizontal) postScale(-1f, 1f)
     }
     return Bitmap.createBitmap(this, 0, 0, width, height, matrix, false)
-}
-
-private fun Bitmap.calcScale(minWidth: Int, minHeight: Int): Float {
-    val scaleW = width.toFloat() / minWidth.toFloat()
-    val scaleH = height.toFloat() / minHeight.toFloat()
-    log("width scale = $scaleW")
-    log("height scale = $scaleH")
-    return max(1f, min(scaleW, scaleH))
 }
