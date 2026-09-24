@@ -25,7 +25,7 @@ import kotlin.math.min
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [36])
+@Config(sdk = [37])
 class CompressorTest {
 
     private val context = RuntimeEnvironment.getApplication()
