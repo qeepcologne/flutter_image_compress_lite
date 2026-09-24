@@ -22,22 +22,11 @@ private func pixelExactFormat() -> UIGraphicsImageRendererFormat {
 }
 
 extension UIImage {
-    /// Scales to fit the min-width/min-height envelope and, if `degrees` is non-zero, rotates
-    /// in the same rasterization pass. Composing both transforms in one `UIGraphicsImageRenderer`
-    /// avoids allocating an intermediate scaled bitmap and resamples the source pixels only once.
-    func scaledAndRotated(toMinWidth minWidth: CGFloat,
-                          minHeight: CGFloat,
-                          degrees: CGFloat) -> UIImage {
-        let imgRatio = size.width / size.height
-        let maxRatio = minWidth / minHeight
-        let scaleRatio = min(1, imgRatio < maxRatio ? minWidth / size.width : minHeight / size.height)
-        let scaledSize = CGSize(
-            width:  floor(scaleRatio * size.width),
-            height: floor(scaleRatio * size.height)
-        )
-
+    /// Scales to `scaledSize` and, if `degrees` is non-zero, rotates in the same rasterization
+    /// pass. Composing both transforms in one `UIGraphicsImageRenderer` avoids allocating an
+    /// intermediate scaled bitmap and resamples the source pixels only once.
+    func scaledAndRotated(to scaledSize: CGSize, degrees: CGFloat) -> UIImage {
         if ImageCompressPlugin.showLog {
-            log.info("scale = \(scaleRatio)")
             log.info("dst width = \(scaledSize.width)")
             log.info("dst height = \(scaledSize.height)")
             if degrees.truncatingRemainder(dividingBy: 360) != 0 {
@@ -54,8 +43,9 @@ extension UIImage {
         }
 
         // Compose scale + rotate: renderer sized to the rotated bbox of the scaled image,
-        // then translate to center, rotate, flip Y (CG's origin is bottom-left), and draw
-        // the source cgImage into the scaled-size rect — CG resamples once during draw.
+        // then translate to center, rotate, and draw into the scaled-size rect — resampled once.
+        // Draw the UIImage, not its cgImage: the cgImage holds the raw, un-oriented pixels, while
+        // scaledSize is in display orientation, so an EXIF-rotated photo would come out stretched.
         let radians = degrees * .pi / 180
         let finalSize = CGRect(origin: .zero, size: scaledSize)
             .applying(CGAffineTransform(rotationAngle: radians))
@@ -67,15 +57,12 @@ extension UIImage {
             let cg = ctx.cgContext
             cg.translateBy(x: finalSize.width / 2, y: finalSize.height / 2)
             cg.rotate(by: radians)
-            cg.scaleBy(x: 1, y: -1)
-            if let cgImage = cgImage {
-                cg.draw(cgImage, in: CGRect(
-                    x: -scaledSize.width / 2,
-                    y: -scaledSize.height / 2,
-                    width:  scaledSize.width,
-                    height: scaledSize.height
-                ))
-            }
+            draw(in: CGRect(
+                x: -scaledSize.width / 2,
+                y: -scaledSize.height / 2,
+                width:  scaledSize.width,
+                height: scaledSize.height
+            ))
         }
     }
 }
