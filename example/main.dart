@@ -12,14 +12,14 @@ import 'package:flutter_image_compress_lite/flutter_image_compress_lite.dart';
 
 /// Compresses [sourcePath] into [targetPath] as JPEG and returns the
 /// resulting file.
-Future<XFile> compressFile(String sourcePath, String targetPath) => FlutterImageCompress.compressAndGetFile(
+Future<File> compressFile(String sourcePath, String targetPath) => FlutterImageCompress.compressAndGetFile(
   sourcePath,
   targetPath,
   quality: 88,
   keepExif: true,
 );
 
-/// Re-encodes raw image [bytes] as HEIC (Android API 28+ / iOS 15+) and
+/// Re-encodes raw image [bytes] as HEIC (Android API 29+ / iOS 15+) and
 /// returns the compressed bytes.
 Future<Uint8List> compressBytesToHeic(Uint8List bytes) => FlutterImageCompress.compressWithList(
   bytes,
@@ -38,7 +38,7 @@ Future<Uint8List> compressAssetToWebp(String assetName) => FlutterImageCompress.
 void main() async {
   final tmp = Directory.systemTemp.path;
   final out = await compressFile('$tmp/input.jpg', '$tmp/output.jpg');
-  final size = await File(out.path).length();
+  final size = await out.length();
   // ignore: avoid_print
   print('Compressed to ${out.path} (${size ~/ 1024} KiB)');
 }

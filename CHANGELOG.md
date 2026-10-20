@@ -1,3 +1,8 @@
+## 3.0.0
+
+- **BREAKING**: `compressAndGetFile` returns a `dart:io` `File` instead of a `cross_file` `XFile`, and the package no longer depends on or re-exports `cross_file`. Code that only reads `.path`, `readAsBytes()` or `length()` keeps working; code that needs an `XFile` should depend on `cross_file` itself. This avoids version conflicts with `image_picker`/`file_selector`, which still require `cross_file ^0.3`, while `cross_file` 0.4 removed `XFile(path)` and `XFile.path`.
+- **BREAKING** (**Android**): HEIC encoding requires API 29+ (was 28+); on Android 9 it throws `UnsupportedError` like other unsupported formats. `androidx.heifwriter` updated to 1.2.0-rc01, whose own minSdk is 29; it fixes the MIME type used for AVIF encoding and sets color aspects explicitly for SDR input.
+
 ## 2.10.0
 
 - **Android** and **iOS**: large sources are decoded at a power-of-two subsample (`inSampleSize` / `kCGImageSourceSubsampleFactor`) that never goes below the output size, so a 12 MP photo compressed to 1280 px no longer needs a ~48 MB full-resolution bitmap. Output dimensions are the same; output bytes can differ slightly (up to ~11% in testing), mostly for PNG with fine detail. Based on [#7](https://github.com/qeepcologne/flutter_image_compress_lite/pull/7) by @FatJohn.

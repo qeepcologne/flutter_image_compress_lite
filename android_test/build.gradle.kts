@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.heifwriter:heifwriter:1.1.0")
+    implementation("androidx.heifwriter:heifwriter:1.2.0-rc01")
     compileOnly(files(flutterJar))
     testImplementation(files(flutterJar))
     testImplementation("junit:junit:4.13.2")

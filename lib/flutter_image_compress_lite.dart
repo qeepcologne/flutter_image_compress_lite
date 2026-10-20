@@ -7,11 +7,8 @@ library;
 
 import 'dart:io';
 
-import 'package:cross_file/cross_file.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
-
-export 'package:cross_file/cross_file.dart';
 
 /// Output encoding for compressed images.
 enum CompressFormat {
@@ -21,8 +18,8 @@ enum CompressFormat {
   /// PNG — lossless, with alpha.
   png,
 
-  /// HEIC (HEVC in HEIF container) — lossy, with alpha. Android needs API 28+.
-  heic(androidMinApi: 28),
+  /// HEIC (HEVC in HEIF container) — lossy, with alpha. Android needs API 29+.
+  heic(androidMinApi: 29),
 
   /// WebP — lossy, with alpha. Encoding is Android-only.
   webp(iosSupported: false),
@@ -116,8 +113,8 @@ class FlutterImageCompress {
     return result!;
   }
 
-  /// Compress file at [path] and write to [targetPath].
-  static Future<XFile> compressAndGetFile(
+  /// Compress file at [path] and write to [targetPath]; returns the written file.
+  static Future<File> compressAndGetFile(
     String path,
     String targetPath, {
     int minWidth = _Defaults.minWidth,
@@ -138,7 +135,7 @@ class FlutterImageCompress {
       'compressWithFileAndGetFile',
       [path, minWidth, minHeight, quality, targetPath, rotate, format.index, keepExif],
     );
-    return XFile(result!);
+    return File(result!);
   }
 
   /// Compress image from bundled asset [assetName] to [Uint8List].

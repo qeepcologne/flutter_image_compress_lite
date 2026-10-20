@@ -11,16 +11,17 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | Architecture | federated (6 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
 | Dart / Flutter | >=2.12 / >=2.0 | ^3.13 / >=3.47 |
+| `compressAndGetFile` returns | `XFile?` (cross_file) | `File` (dart:io), no cross_file dependency |
 | **Image formats** | | |
 | JPEG / PNG | yes | yes |
 | HEIC / HEIF (iOS) | yes | yes |
-| HEIC / HEIF (Android) | yes (heifwriter, API 28+) | yes (heifwriter, API 28+) |
+| HEIC / HEIF (Android) | yes (heifwriter, API 28+) | yes (heifwriter, API 29+) |
 | WebP (iOS) | encode + decode (SDWebImage) | decode only (native) |
 | WebP (Android) | yes (native) | yes (native) |
 | AVIF (iOS) | decode only, iOS 16+ (native) | decode only, iOS 16+ (native) |
 | AVIF (Android) | decode only, API 31+ (native) | decode API 31+, **encode API 34+** (heifwriter) |
 | **Android** | | |
-| Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.1.0 only** |
+| Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.2.0-rc01 only** |
 | keepExif | JPEG/PNG/WebP (androidx.exifinterface); allow-list of ~92 tags | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+); every tag the framework knows minus source-only ones, so ~30 more survive |
 | Color management | wide-gamut source decoded into its own color space, output not reliably tagged ([#407](https://github.com/fluttercandies/flutter_image_compress/pull/407) open) | wide-gamut source color-managed to sRGB at decode time (API 26+) |
 | Language | Java + Kotlin | Kotlin |
@@ -69,7 +70,7 @@ Also fixes long-standing Android upstream bugs — most visibly JPEG gradient ba
 
 ```yaml
 dependencies:
-  flutter_image_compress_lite: ^2.9.0
+  flutter_image_compress_lite: ^3.0.0
 ```
 
 ```dart
@@ -91,12 +92,13 @@ Same `FlutterImageCompress` method names and core parameters as the upstream. A 
 2. Drop the `numberOfRetries`, `inSampleSize`, and `autoCorrectionAngle` parameters from any call site. Decode-time `OutOfMemoryError` surfaces as a `COMPRESS_ERROR` `PlatformException`; EXIF orientation is always honored on both platforms.
 3. Replace any `on CompressError catch (e)` with `on ArgumentError catch (e)` (or bare `catch (e)`). Dart-side input-validation now throws the standard `dart:core` `ArgumentError`; a bare catch — or `on Error catch (e)`, already required to handle the `UnsupportedError` cases below — covers it.
 4. Drop null-checks on the return values of `compressWithFile`, `compressAndGetFile`, and `compressAssetImage` — these throw on failure here (and treat empty input as a failure) rather than returning `null`.
+5. `compressAndGetFile` returns a `dart:io` `File` instead of an `XFile`. `.path`, `readAsBytes()` and `length()` work as before; if you need an `XFile`, depend on `cross_file` yourself and wrap the path.
 
 ## Error handling
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
 - WebP encoding on iOS (decoding works)
-- HEIC encoding on Android < API 28 (Android 9)
+- HEIC encoding on Android < API 29 (Android 10)
 
 `ArgumentError` is thrown for invalid input caught Dart-side (empty image bytes, empty asset, missing file, same source and target path).
 

@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-    implementation("androidx.heifwriter:heifwriter:1.1.0")
+    implementation("androidx.heifwriter:heifwriter:1.2.0-rc01")
 }
