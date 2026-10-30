@@ -30,7 +30,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | **iOS** | | |
 | Native deps | SDWebImage, SDWebImageWebPCoder | **none** |
 | keepExif | full source metadata via ImageIO passthrough, source-only keys stripped | same |
-| Language | Objective-C | Swift 6.4 |
+| Language | Objective-C | Swift 6 (tools 6.4) |
 | Packaging | CocoaPods + SPM | **SPM only** |
 | Deployment target | 9.0 | 15.0 |
 | Xcode (to build) | any | 27.0+ |
@@ -82,7 +82,7 @@ final result = await FlutterImageCompress.compressAndGetFile(
 );
 ```
 
-See [`example/main.dart`](example/main.dart) for the bytes-in / HEIC / WebP / asset variants.
+[`example/main.dart`](example/main.dart) also defines the bytes-in / HEIC / WebP / asset variants.
 
 ## Migrating from flutter_image_compress
 
@@ -98,7 +98,9 @@ Same `FlutterImageCompress` method names and core parameters as the upstream. A 
 
 `UnsupportedError` is thrown when the requested *encoding* is unsupported on the current platform:
 - WebP encoding on iOS (decoding works)
+- AVIF encoding on iOS (decoding works, iOS 16+)
 - HEIC encoding on Android < API 29 (Android 10)
+- AVIF encoding on Android < API 34 (Android 14)
 
 `ArgumentError` is thrown for invalid input caught Dart-side (empty image bytes, empty asset, missing file, same source and target path).
 
