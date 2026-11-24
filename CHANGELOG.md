@@ -1,3 +1,7 @@
+## 3.0.1
+
+- **Android**: `androidx.heifwriter` updated to the stable 1.2.0 (was 1.2.0-rc01).
+
 ## 3.0.0
 
 - **BREAKING**: `compressAndGetFile` returns a `dart:io` `File` instead of a `cross_file` `XFile`, and the package no longer depends on or re-exports `cross_file`. Code that only reads `.path`, `readAsBytes()` or `length()` keeps working; code that needs an `XFile` should depend on `cross_file` itself. This avoids version conflicts with `image_picker`/`file_selector`, which still require `cross_file ^0.3`, while `cross_file` 0.4 removed `XFile(path)` and `XFile.path`.

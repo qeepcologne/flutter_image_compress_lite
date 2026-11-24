@@ -10,7 +10,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 |---|---|---|
 | Architecture | federated (6 packages) | standalone (1 package) |
 | Platforms | Android, iOS, macOS, Web, OpenHarmony | Android, iOS |
-| Dart / Flutter | >=2.12 / >=2.0 | ^3.13 / >=3.47 |
+| Dart / Flutter | >=2.12 / >=2.0 | ^3.14 / >=3.50 |
 | `compressAndGetFile` returns | `XFile?` (cross_file) | `File` (dart:io), no cross_file dependency |
 | **Image formats** | | |
 | JPEG / PNG | yes | yes |
@@ -21,7 +21,7 @@ Standalone image-compression plugin for Flutter on **Android and iOS** — a rep
 | AVIF (iOS) | decode only, iOS 16+ (native) | decode only, iOS 16+ (native) |
 | AVIF (Android) | decode only, API 31+ (native) | decode API 31+, **encode API 34+** (heifwriter) |
 | **Android** | | |
-| Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.2.0-rc01 only** |
+| Native deps | exifinterface 1.4.2, heifwriter 1.0.0, commons-io 2.16.1 | **heifwriter 1.2.0 only** |
 | keepExif | JPEG/PNG/WebP (androidx.exifinterface); allow-list of ~92 tags | JPEG/PNG/WebP (android.media.ExifInterface; PNG API 30+, WebP API 31+); every tag the framework knows minus source-only ones, so ~30 more survive |
 | Color management | wide-gamut source decoded into its own color space, output not reliably tagged ([#407](https://github.com/fluttercandies/flutter_image_compress/pull/407) open) | wide-gamut source color-managed to sRGB at decode time (API 26+) |
 | Language | Java + Kotlin | Kotlin |
