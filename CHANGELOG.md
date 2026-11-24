@@ -1,5 +1,6 @@
 ## 3.0.1
 
+- Requires **Dart 3.14 / Flutter 3.50** (`sdk: ^3.14.0`, `flutter: >=3.50.0`).
 - **Android**: `androidx.heifwriter` updated to the stable 1.2.0 (was 1.2.0-rc01).
 
 ## 3.0.0
